@@ -7,37 +7,32 @@ const TYPES = [`wifi`, `dishwasher`, `parking`, `washer`, `elevator`, `condition
 const PHOTOS = [`http://o0.github.io/assets/images/tokyo/hotel1.jpg`, `http://o0.github.io/assets/images/tokyo/hotel2.jpg`, `http://o0.github.io/assets/images/tokyo/hotel3.jpg`];
 const MIN_X = 0; // мин x-координата точки с меткой
 const MAX_X = 1200; // мах x-координата точки с меткой
-const MIN_Y = 200; // мин у-координата точки с меткой
-const MAX_Y = 700; // макс y-координата точки с меткой
+const MIN_Y = 130; // мин у-координата точки с меткой
+const MAX_Y = 630; // макс y-координата точки с меткой
 const MAX_PRICE = 1000000;
 const MIN_ROOM = 1;
 const MAX_ROOM = 4;
 const MIN_GUEST = 1;
 const MAX_GUEST = 10;
-const PIN_OFFSET_X = 25;
-const PIN_OFFSET_Y = 70;
+const PIN_WIDTH = 50;
+const PIN_HEIGHT = 70;
 
 // функция получения случайного числа
 const getRandomNumber = (min, max) => {
   return Math.random() * (max - min) + min;
 };
 
-//  функция создания массива из 8 сгенериванных JS объектов
+// функция создания массива из 8 сгенериванных JS объектов
 const getRandomGeneration = () => {
   const temporaryArrays = [];
   for (let i = 1; i <= LENGTHS; i++) {
-    const locations = {
-      x: Math.round(getRandomNumber(MIN_X, MAX_X)),
-      y: Math.round(getRandomNumber(MIN_Y, MAX_Y))
-    };
-
     const declarationExample = {
       author: {
         avatar: `img/avatars/user0${i}.png`
       },
       offer: {
         title: `Заголовок предложения ${i}`,
-        address: `${locations.x}, ${locations.y}`, // адрес на который указывает острый конец пина
+        address: `${location.x + PIN_WIDTH / 2}, ${location.y + PIN_HEIGHT}`, // адрес на который указывает острый конец пина
         price: Math.round(getRandomNumber(0, MAX_PRICE)),
         type: TYPES_OF_HOUSING[Math.round(getRandomNumber(0, TYPES_OF_HOUSING.length - 1))],
         rooms: Math.round(getRandomNumber(MIN_ROOM, MAX_ROOM)),
@@ -49,8 +44,8 @@ const getRandomGeneration = () => {
         photos: PHOTOS.slice(Math.round(getRandomNumber(0, PHOTOS.length - 1)))
       },
       location: { // расположение пина
-        x: locations.x - PIN_OFFSET_X,
-        y: locations.y - PIN_OFFSET_Y
+        x: Math.round(getRandomNumber(MIN_X, MAX_X)),
+        y: Math.round(getRandomNumber(MIN_Y, MAX_Y))
       }
     };
     temporaryArrays.push(declarationExample);
@@ -69,8 +64,7 @@ const pinContent = document.querySelector(`#pin`).content.querySelector(`.map__p
 const createElementWithSimpleLabel = (declaration) => {
   const pinContentClone = pinContent.cloneNode(true);
   const pinImg = pinContentClone.querySelector(`img`);
-  pinContentClone.style.left = `${declaration.location.x}px`;
-  pinContentClone.style.top = `${declaration.location.y}px`;
+  pinContentClone.style = `left: ${declaration.location.x - PIN_WIDTH / 2}px; top: ${declaration.location.y - PIN_HEIGHT}px`;
   pinImg.src = declaration.author.avatar;
   pinImg.alt = declaration.offer.title;
   return pinContentClone;
