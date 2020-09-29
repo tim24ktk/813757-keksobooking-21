@@ -26,13 +26,18 @@ const getRandomNumber = (min, max) => {
 const getRandomGeneration = () => {
   const temporaryArrays = [];
   for (let i = 1; i <= LENGTHS; i++) {
+    const locations = {
+      x: Math.round(getRandomNumber(MIN_X, MAX_X)),
+      y: Math.round(getRandomNumber(MIN_Y, MAX_Y))
+    };
+
     const declarationExample = {
       author: {
         avatar: `img/avatars/user0${i}.png`
       },
       offer: {
         title: `Заголовок предложения ${i}`,
-        address: `${location.x + PIN_WIDTH / 2}, ${location.y + PIN_HEIGHT}`, // адрес на который указывает острый конец пина
+        address: `${locations.x}, ${locations.y}`, // адрес на который указывает острый конец пина
         price: Math.round(getRandomNumber(0, MAX_PRICE)),
         type: TYPES_OF_HOUSING[Math.round(getRandomNumber(0, TYPES_OF_HOUSING.length - 1))],
         rooms: Math.round(getRandomNumber(MIN_ROOM, MAX_ROOM)),
@@ -44,8 +49,8 @@ const getRandomGeneration = () => {
         photos: PHOTOS.slice(Math.round(getRandomNumber(0, PHOTOS.length - 1)))
       },
       location: { // расположение пина
-        x: Math.round(getRandomNumber(MIN_X, MAX_X)),
-        y: Math.round(getRandomNumber(MIN_Y, MAX_Y))
+        x: locations.x - PIN_WIDTH / 2,
+        y: locations.y - PIN_HEIGHT
       }
     };
     temporaryArrays.push(declarationExample);
@@ -64,12 +69,12 @@ const pinContent = document.querySelector(`#pin`).content.querySelector(`.map__p
 const createElementWithSimpleLabel = (declaration) => {
   const pinContentClone = pinContent.cloneNode(true);
   const pinImg = pinContentClone.querySelector(`img`);
-  pinContentClone.style = `left: ${declaration.location.x - PIN_WIDTH / 2}px; top: ${declaration.location.y - PIN_HEIGHT}px`;
+  pinContentClone.style.left = `${declaration.location.x}px`;
+  pinContentClone.style.top = `${declaration.location.y}px`;
   pinImg.src = declaration.author.avatar;
   pinImg.alt = declaration.offer.title;
   return pinContentClone;
 };
-
 
 // функция заполнения блока DOM-элементами на основе массива JS-объектов
 const mapPins = map.querySelector(`.map__pins`);
