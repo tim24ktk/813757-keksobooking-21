@@ -65,27 +65,30 @@ const activatePage = () => {
 };
 
 // активация страницы c помощью Enter
-const onPinEnterPress = (evt) => {
+const onPinMainEnterPress = (evt) => {
   if (evt.key === ENTER) {
     activatePage();
-    mapPinMain.removeEventListener(`keydown`, onPinEnterPress);
+    mapPinMain.removeEventListener(`mousedown`, onPinMousePress);
+    mapPinMain.removeEventListener(`keydown`, onPinMainEnterPress);
   }
 };
 
-mapPinMain.addEventListener(`keydown`, onPinEnterPress);
+mapPinMain.addEventListener(`keydown`, onPinMainEnterPress);
 
-// активация страницы с помощью клика
+// активация страницы с помощью мыши
 const onPinMousePress = (evt) => {
   if (evt.button === MOUSE_EVENT_INDEX) {
     activatePage();
+    mapPinMain.removeEventListener(`keydown`, onPinMainEnterPress);
+    mapPinMain.removeEventListener(`mousedown`, onPinMousePress);
   }
-  mapPinMain.removeEventListener(`mousedown`, onPinMousePress);
 };
 
 mapPinMain.addEventListener(`mousedown`, onPinMousePress);
+
 // ф-я блокировки формы с фильтрами
 const blockFilters = () => {
-  for (let mapFiltersChild of mapFiltersChildren) {
+  for (const mapFiltersChild of mapFiltersChildren) {
     mapFiltersChild.disabled = true;
   }
 };
@@ -133,23 +136,30 @@ type.addEventListener(`change`, onTypeChange);
 // ф-я проверки количества соответствия количества гостей и комнат
 const roomNumber = adForm.querySelector(`#room_number`);
 const capacity = adForm.querySelector(`#capacity`);
-const getCapacity = () => {
-  if ((capacity.value <= roomNumber.value && roomNumber.value !== `100` && capacity.value !== `0`) || (roomNumber.value === `100` && capacity.value === `0`)) {
+
+const onCapacityChange = () => {
+  if ((+capacity.value <= +roomNumber.value && +roomNumber.value !== 100 && +capacity.value !== 0) || (+roomNumber.value === 100 && +capacity.value === 0)) {
     roomNumber.style.borderColor = ``;
     capacity.style.borderColor = ``;
-    return true;
   } else {
     roomNumber.style.borderColor = `red`;
     capacity.style.borderColor = `red`;
-    return false;
   }
 };
-capacity.addEventListener(`change`, getCapacity);
+
+capacity.addEventListener(`change`, onCapacityChange);
+
+const getSelectValue = () => {
+  if ((+capacity.value <= +roomNumber.value && +roomNumber.value !== 100 && +capacity.value !== 0) || (+roomNumber.value === 100 && +capacity.value === 0)) {
+    return true;
+  }
+  return false;
+};
 
 // ф-я валидации и отправки формы
 adForm.addEventListener(`submit`, (evt) => {
   evt.preventDefault();
-  if (getCapacity()) {
+  if (getSelectValue()) {
     adForm.submit();
   }
 });
