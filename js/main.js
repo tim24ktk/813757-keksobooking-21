@@ -5,10 +5,10 @@ const TYPES_OF_HOUSING = [`palace`, `flat`, `house`, `bungalow`];
 const CHECKIN_CHECKOUT_TIMES = [`12:00`, `13:00`, `14:00`];
 const TYPES = [`wifi`, `dishwasher`, `parking`, `washer`, `elevator`, `conditioner`];
 const PHOTOS = [`http://o0.github.io/assets/images/tokyo/hotel1.jpg`, `http://o0.github.io/assets/images/tokyo/hotel2.jpg`, `http://o0.github.io/assets/images/tokyo/hotel3.jpg`];
-const MIN_X = 0; // мин x-координата точки с меткой
-const MAX_X = 1200; // мах x-координата точки с меткой
-const MIN_Y = 130; // мин у-координата точки с меткой
-const MAX_Y = 630; // макс y-координата точки с меткой
+const MIN_X = 0;
+const MAX_X = 1200;
+const MIN_Y = 130;
+const MAX_Y = 630;
 const MAX_PRICE = 1000000;
 const MIN_ROOM = 1;
 const MAX_ROOM = 4;
@@ -17,8 +17,11 @@ const MAX_GUEST = 10;
 const PIN_WIDTH = 50;
 const PIN_HEIGHT = 70;
 const MAIN_PIN_WIDTH = 65;
-const MAIN_PIN_HEIGHT_ACTIVE = 87;
+const MAIN_PIN_HEIGHT_ACTIVE = 80;
+const ENTER = `Enter`;
+const MOUSE_EVENT_INDEX = 0;
 
+// переменные для активации страницы и валидации формы!!!
 const map = document.querySelector(`.map`);
 const mapFilters = map.querySelector(`.map__filters`);
 const adForm = document.querySelector(`.ad-form`);
@@ -43,39 +46,43 @@ const mainPinAddress = {
 };
 
 // адрес активированного пина
-const getAddress = () => {
+const renderAddress = () => {
   address.value = `${mainPinAddress.x}, ${mainPinAddress.y}`;
 };
 
 // функция активации страницы
-const pageActivation = () => {
-  for (let mapFiltersChild of mapFiltersChildren) {
+const activatePage = () => {
+  for (const mapFiltersChild of mapFiltersChildren) {
     mapFiltersChild.disabled = false;
   }
-  for (let adFormChild of adFormChildren) {
+  for (const adFormChild of adFormChildren) {
     adFormChild.disabled = false;
   }
   map.classList.remove(`map--faded`);
   adForm.classList.remove(`ad-form--disabled`);
+  createMapPins(getRandomGeneration());
+  renderAddress();
 };
 
-// событие для активации страницы c помощью Enter
-mapPinMain.addEventListener(`keydown`, (evt) => {
-  if (evt.key === `Enter`) {
-    pageActivation();
-    createMapPins(getRandomGeneration());
+// активация страницы c помощью Enter
+const onPinEnterPress = (evt) => {
+  if (evt.key === ENTER) {
+    activatePage();
+    mapPinMain.removeEventListener(`keydown`, onPinEnterPress);
   }
-});
+};
 
-// событие для активации страницы
-mapPinMain.addEventListener(`mousedown`, function (evt) {
-  if (evt.which === 1) {
-    pageActivation();
-    createMapPins(getRandomGeneration());
-    getAddress();
+mapPinMain.addEventListener(`keydown`, onPinEnterPress);
+
+// активация страницы с помощью клика
+const onPinMousePress = (evt) => {
+  if (evt.button === MOUSE_EVENT_INDEX) {
+    activatePage();
   }
-});
+  mapPinMain.removeEventListener(`mousedown`, onPinMousePress);
+};
 
+mapPinMain.addEventListener(`mousedown`, onPinMousePress);
 // ф-я блокировки формы с фильтрами
 const blockFilters = () => {
   for (let mapFiltersChild of mapFiltersChildren) {
@@ -86,7 +93,7 @@ blockFilters();
 
 // функция блокировки формы заполнения инфомации об объявлении
 const blockFilling = () => {
-  for (let adFormChild of adFormChildren) {
+  for (const adFormChild of adFormChildren) {
     adFormChild.disabled = true;
   }
   address.value = `${mainPinCenter.x}, ${mainPinCenter.y}`;
@@ -98,16 +105,16 @@ const adFormTime = adForm.querySelector(`.ad-form__element--time`);
 const timeIn = adFormTime.querySelector(`#timein`);
 const timeOut = adFormTime.querySelector(`#timeout`);
 
-const selectTime = function (evt) {
+const onAdFormTimeChange = (evt) => {
   timeIn.value = evt.target.value;
   timeOut.value = evt.target.value;
 };
-adFormTime.addEventListener(`change`, selectTime);
+adFormTime.addEventListener(`change`, onAdFormTimeChange);
 
 // ф-я изменения placeholder и проверки мин цены в зависимости от типа жилья
 const type = document.querySelector(`#type`);
-const selectHouse = function (evt) {
-  if (evt.target.value === `bungalow`) {
+const onTypeChange = (evt) => {
+  if (evt.target.value === `bungalo`) {
     price.placeholder = `0`;
     price.min = `0`;
   } else if (evt.target.value === `flat`) {
@@ -121,23 +128,31 @@ const selectHouse = function (evt) {
     price.min = `10000`;
   }
 };
-type.addEventListener(`change`, selectHouse);
+type.addEventListener(`change`, onTypeChange);
 
 // ф-я проверки количества соответствия количества гостей и комнат
 const roomNumber = adForm.querySelector(`#room_number`);
 const capacity = adForm.querySelector(`#capacity`);
-const selectRooms = () => {
-  if ((Number(capacity.value) <= Number(roomNumber.value) && Number(roomNumber.value) !== 100 && Number(capacity.value) !== 0) || (Number(roomNumber.value) === 100 && Number(capacity.value) === 0)) {
+const getCapacity = () => {
+  if ((capacity.value <= roomNumber.value && roomNumber.value !== `100` && capacity.value !== `0`) || (roomNumber.value === `100` && capacity.value === `0`)) {
     roomNumber.style.borderColor = ``;
     capacity.style.borderColor = ``;
-    return false;
+    return true;
   } else {
     roomNumber.style.borderColor = `red`;
     capacity.style.borderColor = `red`;
-    return true;
+    return false;
   }
 };
-capacity.addEventListener(`change`, selectRooms);
+capacity.addEventListener(`change`, getCapacity);
+
+// ф-я валидации и отправки формы
+adForm.addEventListener(`submit`, (evt) => {
+  evt.preventDefault();
+  if (getCapacity()) {
+    adForm.submit();
+  }
+});
 
 // функция получения случайного числа
 const getRandomNumber = (min, max) => {
@@ -159,7 +174,7 @@ const getRandomGeneration = () => {
       },
       offer: {
         title: `Заголовок предложения ${i}`,
-        address: `${locations.x}, ${locations.y}`, // адрес на который указывает острый конец пина
+        address: `${locations.x}, ${locations.y}`,
         price: Math.round(getRandomNumber(0, MAX_PRICE)),
         type: TYPES_OF_HOUSING[Math.round(getRandomNumber(0, TYPES_OF_HOUSING.length - 1))],
         rooms: Math.round(getRandomNumber(MIN_ROOM, MAX_ROOM)),
@@ -170,7 +185,7 @@ const getRandomGeneration = () => {
         description: `Описание ${i}`,
         photos: PHOTOS.slice(Math.round(getRandomNumber(0, PHOTOS.length - 1)))
       },
-      location: { // расположение пина
+      location: {
         x: locations.x,
         y: locations.y
       }
