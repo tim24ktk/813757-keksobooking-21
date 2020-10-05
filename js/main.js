@@ -20,6 +20,8 @@ const MAIN_PIN_WIDTH = 65;
 const MAIN_PIN_HEIGHT_ACTIVE = 80;
 const ENTER = `Enter`;
 const MOUSE_EVENT_INDEX = 0;
+const MIN_TITLE_LENGTH = 30;
+const MAX_TITLE_LENGTH = 100;
 
 // переменные для активации страницы и валидации формы!!!
 const map = document.querySelector(`.map`);
@@ -60,31 +62,29 @@ const activatePage = () => {
   }
   map.classList.remove(`map--faded`);
   adForm.classList.remove(`ad-form--disabled`);
-  createMapPins(getRandomGeneration());
+  createMapPins(getArraysRandomAds());
   renderAddress();
+  mapPinMain.removeEventListener(`mousedown`, onMapPinMainMouseDown);
+  mapPinMain.removeEventListener(`keydown`, onMapPinMainEnterKeyDown);
 };
 
 // активация страницы c помощью Enter
-const onPinMainEnterPress = (evt) => {
+const onMapPinMainEnterKeyDown = (evt) => {
   if (evt.key === ENTER) {
     activatePage();
-    mapPinMain.removeEventListener(`mousedown`, onPinMousePress);
-    mapPinMain.removeEventListener(`keydown`, onPinMainEnterPress);
   }
 };
 
-mapPinMain.addEventListener(`keydown`, onPinMainEnterPress);
+mapPinMain.addEventListener(`keydown`, onMapPinMainEnterKeyDown);
 
 // активация страницы с помощью мыши
-const onPinMousePress = (evt) => {
+const onMapPinMainMouseDown = (evt) => {
   if (evt.button === MOUSE_EVENT_INDEX) {
     activatePage();
-    mapPinMain.removeEventListener(`keydown`, onPinMainEnterPress);
-    mapPinMain.removeEventListener(`mousedown`, onPinMousePress);
   }
 };
 
-mapPinMain.addEventListener(`mousedown`, onPinMousePress);
+mapPinMain.addEventListener(`mousedown`, onMapPinMainMouseDown);
 
 // ф-я блокировки формы с фильтрами
 const blockFilters = () => {
@@ -116,7 +116,7 @@ adFormTime.addEventListener(`change`, onAdFormTimeChange);
 
 // ф-я изменения placeholder и проверки мин цены в зависимости от типа жилья
 const type = document.querySelector(`#type`);
-const onTypeChange = (evt) => {
+const checkPriceOffer = (evt) => {
   if (evt.target.value === `bungalo`) {
     price.placeholder = `0`;
     price.min = `0`;
@@ -126,43 +126,69 @@ const onTypeChange = (evt) => {
   } else if (evt.target.value === `house`) {
     price.placeholder = `5 000`;
     price.min = `5000`;
-  } else {
+  } else if (evt.target.value === `palace`) {
     price.placeholder = `10 000`;
     price.min = `10000`;
   }
 };
-type.addEventListener(`change`, onTypeChange);
+
+type.addEventListener(`change`, checkPriceOffer);
+
+// ф-я проверки провильного заполнения заголовка объявления
+const adTitleInput = adForm.querySelector(`#title`);
+adTitleInput.addEventListener(`input`, () => {
+  const valueLength = adTitleInput.value.length;
+  if (valueLength < MIN_TITLE_LENGTH) {
+    adTitleInput.setCustomValidity(`Ещё ${MIN_TITLE_LENGTH - valueLength} симв.`);
+  } else if (adTitleInput > MAX_TITLE_LENGTH) {
+    adTitleInput.setCustomValidity(`Удалите ${valueLength - MAX_TITLE_LENGTH} симв.`);
+  } else {
+    adTitleInput.setCustomValidity(``);
+  }
+  // adTitleInput.reportVadality(); почему-то с ним показывает ошибку хотя в в демонстрации добавляется на 18 шаге, но без него все работает как задумано!
+});
+
+adTitleInput.addEventListener(`invalid`, function () {
+  if (adTitleInput.validity.tooShort) {
+    adTitleInput.setCustomValidity(`Имя должно состоять минимум из 30 символов`);
+  } else if (adTitleInput.validity.tooLong) {
+    adTitleInput.setCustomValidity(`Имя не должно превышать 100 символов`);
+  } else if (adTitleInput.validity.valueMissing) {
+    adTitleInput.setCustomValidity(`Обязательное поле`);
+  } else {
+    adTitleInput.setCustomValidity(``);
+  }
+});
 
 // ф-я проверки количества соответствия количества гостей и комнат
 const roomNumber = adForm.querySelector(`#room_number`);
 const capacity = adForm.querySelector(`#capacity`);
 
 const onCapacityChange = () => {
-  if ((+capacity.value <= +roomNumber.value && +roomNumber.value !== 100 && +capacity.value !== 0) || (+roomNumber.value === 100 && +capacity.value === 0)) {
-    roomNumber.style.borderColor = ``;
-    capacity.style.borderColor = ``;
-  } else {
-    roomNumber.style.borderColor = `red`;
-    capacity.style.borderColor = `red`;
-  }
+  validateRoomCapacity();
+};
+
+const onRoomNumberChange = () => {
+  validateRoomCapacity();
 };
 
 capacity.addEventListener(`change`, onCapacityChange);
+roomNumber.addEventListener(`change`, onRoomNumberChange);
 
-const getSelectValue = () => {
-  if ((+capacity.value <= +roomNumber.value && +roomNumber.value !== 100 && +capacity.value !== 0) || (+roomNumber.value === 100 && +capacity.value === 0)) {
-    return true;
-  }
-  return false;
+const checkRoomCapacity = () => {
+  const capacityValue = +capacity.value;
+  const roomValue = +roomNumber.value;
+  return (capacityValue <= roomValue && roomValue !== 100 && capacityValue !== 0)
+          || (roomValue === 100 && capacityValue === 0);
 };
 
-// ф-я валидации и отправки формы
-adForm.addEventListener(`submit`, (evt) => {
-  evt.preventDefault();
-  if (getSelectValue()) {
-    adForm.submit();
-  }
-});
+const validateRoomCapacity = () => {
+  const errorMessage = checkRoomCapacity() ? `` : `Недоступное кол. мест`;
+  capacity.setCustomValidity(errorMessage);
+  const className = errorMessage !== `` ? `red` : ``;
+  roomNumber.style.borderColor = className;
+  capacity.style.borderColor = className;
+};
 
 // функция получения случайного числа
 const getRandomNumber = (min, max) => {
@@ -170,45 +196,50 @@ const getRandomNumber = (min, max) => {
 };
 
 // функция создания массива из 8 сгенериванных JS объектов
-const getRandomGeneration = () => {
+const getExampleAd = (index) => {
+  const locations = {
+    x: Math.round(getRandomNumber(MIN_X, MAX_X)),
+    y: Math.round(getRandomNumber(MIN_Y, MAX_Y))
+  };
+
+  const declarationExample = {
+    author: {
+      avatar: `img/avatars/user0${index}.png`
+    },
+    offer: {
+      title: `Заголовок предложения ${index}`,
+      address: `${locations.x}, ${locations.y}`,
+      price: Math.round(getRandomNumber(0, MAX_PRICE)),
+      type: TYPES_OF_HOUSING[Math.round(getRandomNumber(0, TYPES_OF_HOUSING.length - 1))],
+      rooms: Math.round(getRandomNumber(MIN_ROOM, MAX_ROOM)),
+      guests: Math.round(getRandomNumber(MIN_GUEST, MAX_GUEST)),
+      checkin: `${CHECKIN_CHECKOUT_TIMES[Math.round(getRandomNumber(0, CHECKIN_CHECKOUT_TIMES.length - 1))]}`,
+      checkout: `${CHECKIN_CHECKOUT_TIMES[Math.round(getRandomNumber(0, CHECKIN_CHECKOUT_TIMES.length - 1))]}`,
+      features: TYPES.slice(Math.round(getRandomNumber(0, TYPES.length - 1))),
+      description: `Описание ${index}`,
+      photos: PHOTOS.slice(Math.round(getRandomNumber(0, PHOTOS.length - 1)))
+    },
+    location: {
+      x: locations.x,
+      y: locations.y
+    }
+  };
+  return declarationExample;
+};
+
+const getArraysRandomAds = () => {
   const temporaryArrays = [];
   for (let i = 1; i <= LENGTHS; i++) {
-    const locations = {
-      x: Math.round(getRandomNumber(MIN_X, MAX_X)),
-      y: Math.round(getRandomNumber(MIN_Y, MAX_Y))
-    };
-
-    const declarationExample = {
-      author: {
-        avatar: `img/avatars/user0${i}.png`
-      },
-      offer: {
-        title: `Заголовок предложения ${i}`,
-        address: `${locations.x}, ${locations.y}`,
-        price: Math.round(getRandomNumber(0, MAX_PRICE)),
-        type: TYPES_OF_HOUSING[Math.round(getRandomNumber(0, TYPES_OF_HOUSING.length - 1))],
-        rooms: Math.round(getRandomNumber(MIN_ROOM, MAX_ROOM)),
-        guests: Math.round(getRandomNumber(MIN_GUEST, MAX_GUEST)),
-        checkin: `${CHECKIN_CHECKOUT_TIMES[Math.round(getRandomNumber(0, CHECKIN_CHECKOUT_TIMES.length - 1))]}`,
-        checkout: `${CHECKIN_CHECKOUT_TIMES[Math.round(getRandomNumber(0, CHECKIN_CHECKOUT_TIMES.length - 1))]}`,
-        features: TYPES.slice(Math.round(getRandomNumber(0, TYPES.length - 1))),
-        description: `Описание ${i}`,
-        photos: PHOTOS.slice(Math.round(getRandomNumber(0, PHOTOS.length - 1)))
-      },
-      location: {
-        x: locations.x,
-        y: locations.y
-      }
-    };
-    temporaryArrays.push(declarationExample);
+    temporaryArrays.push(getExampleAd(i));
   }
   return temporaryArrays;
 };
-const declarations = getRandomGeneration();
 
-//  создание DOM элемента на основе JS-объекта
+const declarations = getArraysRandomAds();
+
+// создание DOM элемента на основе JS-объекта
 const pinContent = document.querySelector(`#pin`).content.querySelector(`.map__pin`);
-const createElementWithSimpleLabel = (declaration) => {
+const getElementWithSimpleLabel = (declaration) => {
   const pinContentClone = pinContent.cloneNode(true);
   const pinImg = pinContentClone.querySelector(`img`);
   pinContentClone.style.left = `${declaration.location.x - PIN_WIDTH / 2}px`;
@@ -223,7 +254,7 @@ const mapPins = map.querySelector(`.map__pins`);
 const createMapPins = () => {
   const fragment = document.createDocumentFragment();
   declarations.forEach((item) => {
-    fragment.appendChild(createElementWithSimpleLabel(item));
+    fragment.appendChild(getElementWithSimpleLabel(item));
   });
   mapPins.appendChild(fragment);
 };
