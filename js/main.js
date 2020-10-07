@@ -44,7 +44,7 @@
     }
     map.classList.remove(`map--faded`);
     adForm.classList.remove(`ad-form--disabled`);
-    window.pin.isCreateMapPins(window.pin.isGetArraysRandomAds);
+    window.map.createMapPins();
     renderAddress();
     mapPinMain.removeEventListener(`mousedown`, onMapPinMainMouseDown);
     mapPinMain.removeEventListener(`keydown`, onMapPinMainEnterKeyDown);
@@ -52,26 +52,13 @@
 
   // активация страницы c помощью Enter
   const onMapPinMainEnterKeyDown = (evt) => {
-    window.main.isEnterKeyDown(evt, activatePage);
+    enterKeyDown(evt, activatePage);
   };
-
-  const onEnterKeyDown = (evt, action) => {
-    if (evt.key === ENTER) {
-      action();
-    }
-  };
-
   mapPinMain.addEventListener(`keydown`, onMapPinMainEnterKeyDown);
 
   // активация страницы с помощью мыши
   const onMapPinMainMouseDown = (evt) => {
-    window.main.isMouseDown(evt, activatePage);
-  };
-
-  const onMouseDown = (evt, action) => {
-    if (evt.button === MOUSE_EVENT_INDEX) {
-      action();
-    }
+    mouseDown(evt, activatePage);
   };
 
   mapPinMain.addEventListener(`mousedown`, onMapPinMainMouseDown);
@@ -93,17 +80,27 @@
   };
   blockFilling();
 
-  // оставить в main, но сделать модуль
+  // общее
+  const enterKeyDown = (evt, action) => {
+    if (evt.key === ENTER) {
+      action();
+    }
+  };
+
+  const mouseDown = (evt, action) => {
+    if (evt.button === MOUSE_EVENT_INDEX) {
+      action();
+    }
+  };
+
   const getRandomNumber = (min, max) => {
     return Math.random() * (max - min) + min;
   };
 
-  // функция получения случайного числа
+  // экспорт
   window.main = {
-    isGetRandomNumber: getRandomNumber,
-    isMap: map,
+    getRandomNumber: getRandomNumber,
+    map: map,
     adForm: adForm,
-    isMouseDown: onMouseDown,
-    isEnterKeyDown: onEnterKeyDown
   };
 })();

@@ -20,7 +20,7 @@
   adFormTime.addEventListener(`change`, onAdFormTimeChange);
 
   // ф-я изменения placeholder и проверки мин цены в зависимости от типа жилья
-  const checkPriceOffer = (evt) => {
+  const onTypeChange = (evt) => {
     if (evt.target.value === `bungalo`) {
       price.placeholder = `0`;
       price.min = `0`;
@@ -36,7 +36,7 @@
     }
   };
 
-  type.addEventListener(`change`, checkPriceOffer);
+  type.addEventListener(`change`, onTypeChange);
 
   // ф-я проверки провильного заполнения заголовка объявления
   adTitleInput.addEventListener(`input`, () => {
@@ -48,10 +48,9 @@
     } else {
       adTitleInput.setCustomValidity(``);
     }
-    // adTitleInput.reportVadality(); почему-то с ним показывает ошибку хотя в в демонстрации добавляется на 18 шаге, но без него все работает как задумано!
   });
 
-  adTitleInput.addEventListener(`invalid`, function () {
+  adTitleInput.addEventListener(`invalid`, () => {
     if (adTitleInput.validity.tooShort) {
       adTitleInput.setCustomValidity(`Имя должно состоять минимум из 30 символов`);
     } else if (adTitleInput.validity.tooLong) {
@@ -64,7 +63,6 @@
   });
 
   // ф-я проверки количества соответствия количества гостей и комнат
-
   const onCapacityChange = () => {
     validateRoomCapacity();
   };
