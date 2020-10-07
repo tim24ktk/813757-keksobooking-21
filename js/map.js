@@ -85,6 +85,6 @@
   };
 
   window.map = {
-    createMapPins: createMapPins,
+    createPins: createMapPins,
   };
 })();

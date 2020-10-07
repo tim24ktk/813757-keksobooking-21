@@ -44,7 +44,7 @@
     }
     map.classList.remove(`map--faded`);
     adForm.classList.remove(`ad-form--disabled`);
-    window.map.createMapPins();
+    window.map.createPins();
     renderAddress();
     mapPinMain.removeEventListener(`mousedown`, onMapPinMainMouseDown);
     mapPinMain.removeEventListener(`keydown`, onMapPinMainEnterKeyDown);
@@ -58,7 +58,7 @@
 
   // активация страницы с помощью мыши
   const onMapPinMainMouseDown = (evt) => {
-    mouseDown(evt, activatePage);
+    clickMouseDown(evt, activatePage);
   };
 
   mapPinMain.addEventListener(`mousedown`, onMapPinMainMouseDown);
@@ -87,7 +87,7 @@
     }
   };
 
-  const mouseDown = (evt, action) => {
+  const clickMouseDown = (evt, action) => {
     if (evt.button === MOUSE_EVENT_INDEX) {
       action();
     }
