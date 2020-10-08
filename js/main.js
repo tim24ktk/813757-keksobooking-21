@@ -44,7 +44,7 @@
     }
     map.classList.remove(`map--faded`);
     adForm.classList.remove(`ad-form--disabled`);
-    window.map.createPins();
+    window.load();
     renderAddress();
     mapPinMain.removeEventListener(`mousedown`, onMapPinMainMouseDown);
     mapPinMain.removeEventListener(`keydown`, onMapPinMainEnterKeyDown);
