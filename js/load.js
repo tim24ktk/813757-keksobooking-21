@@ -14,11 +14,15 @@
 
     xhr.responseType = `json`;
 
-    const onSuccess = (data) => {
-      window.map.createPins(data);
+    const initiateSuccess = (data) => {
+      data.forEach((item) => {
+        if (item.offer !== undefined) {
+          window.map.createPins(data);
+        }
+      });
     };
 
-    const onError = (error) => {
+    const initiateError = (error) => {
       const errorMessage = document.createElement(`div`);
       errorMessage.textContent = error;
       errorMessage.style.width = `400px`;
@@ -37,14 +41,15 @@
       errorMessage.style.top = `50%`;
       errorMessage.style.left = `50%`;
       errorMessage.style.transform = `translateX(-200px)`;
-      document.body.append(errorMessage);
+      document.body.appendChild(errorMessage);
+      window.main.blockElements();
     };
 
     xhr.addEventListener(`load`, () => {
       let error;
       switch (xhr.status) {
         case StatusCode.OK:
-          onSuccess(xhr.response);
+          initiateSuccess(xhr.response);
           break;
         case StatusCode.BAD_REQUEST:
           error = `Неверный запрос`;
@@ -56,16 +61,16 @@
           error = `Cтатус ответа: : ${xhr.status} ${xhr.statusText}`;
       }
       if (error) {
-        onError(error);
+        initiateError(error);
       }
     });
 
     xhr.addEventListener(`error`, () => {
-      onError(`Произошла ошибка соединения с сервером`);
+      initiateError(`Произошла ошибка соединения с сервером`);
     });
 
     xhr.addEventListener(`timeout`, () => {
-      onError(`Запрос не успел выполниться за ${xhr.timeout} мс`);
+      initiateError(`Запрос не успел выполниться за ${xhr.timeout} мс`);
     });
 
     xhr.timeout = TIMEOUT;

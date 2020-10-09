@@ -20,9 +20,9 @@
 
   const createMapPins = (arrays) => {
     const fragment = document.createDocumentFragment();
-    for (let i = 0; i < arrays.length; i++) {
-      fragment.appendChild(getElementWithSimpleLabel(arrays[i]));
-    }
+    arrays.forEach((item) => {
+      fragment.appendChild(getElementWithSimpleLabel(item));
+    });
     mapPins.appendChild(fragment);
   };
 
