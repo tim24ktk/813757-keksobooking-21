@@ -38,7 +38,7 @@
   const activatePage = () => {
     map.classList.remove(`map--faded`);
     adForm.classList.remove(`ad-form--disabled`);
-    window.load();
+    window.map.createPins();
     for (const mapFiltersChild of mapFiltersChildren) {
       mapFiltersChild.disabled = false;
     }
