@@ -36,15 +36,15 @@
 
   // функция активации страницы
   const activatePage = () => {
+    map.classList.remove(`map--faded`);
+    adForm.classList.remove(`ad-form--disabled`);
+    window.map.createPins();
     for (const mapFiltersChild of mapFiltersChildren) {
       mapFiltersChild.disabled = false;
     }
     for (const adFormChild of adFormChildren) {
       adFormChild.disabled = false;
     }
-    map.classList.remove(`map--faded`);
-    adForm.classList.remove(`ad-form--disabled`);
-    window.map.createPins();
     renderAddress();
     mapPinMain.removeEventListener(`mousedown`, onMapPinMainMouseDown);
     mapPinMain.removeEventListener(`keydown`, onMapPinMainEnterKeyDown);
@@ -81,26 +81,22 @@
   blockFilling();
 
   // общее
-  const enterKeyDown = (evt, action) => {
+  const enterKeyDown = (evt, enterActionCb) => {
     if (evt.key === ENTER) {
-      action();
+      enterActionCb();
     }
   };
 
-  const clickMouseDown = (evt, action) => {
+  const clickMouseDown = (evt, clickActionCb) => {
     if (evt.button === MOUSE_EVENT_INDEX) {
-      action();
+      clickActionCb();
     }
-  };
-
-  const getRandomNumber = (min, max) => {
-    return Math.random() * (max - min) + min;
   };
 
   // экспорт
   window.main = {
-    getRandomNumber: getRandomNumber,
     map: map,
     adForm: adForm,
+    blockElements: blockFilters
   };
 })();
