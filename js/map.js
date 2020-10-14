@@ -2,31 +2,48 @@
 
 // модуль отрисовки меток на карте
 (() => {
-  const PIN_WIDTH = 50;
-  const PIN_HEIGHT = 70;
-  const MAX_SIMILAR_PIN_COUNT = 5;
-  const mapPins = window.main.map.querySelector(`.map__pins`);
-  const pinContent = document.querySelector(`#pin`).content.querySelector(`.map__pin`);
+  const housingType = window.main.mapFilters.querySelector(`#housing-type`);
 
-  // создание DOM элемента на основе JS-объекта
-  const getElementWithSimpleLabel = (declaration) => {
-    const pinContentClone = pinContent.cloneNode(true);
-    const pinImg = pinContentClone.querySelector(`img`);
-    pinContentClone.style.left = `${declaration.location.x - PIN_WIDTH / 2}px`;
-    pinContentClone.style.top = `${declaration.location.y - PIN_HEIGHT}px`;
-    pinImg.src = declaration.author.avatar;
-    pinImg.alt = declaration.offer.title;
-    return pinContentClone;
+  let pins = [];
+
+  // ф-я удаляет пины которые уже отрисованы на карте
+  const removePins = () => {
+    const mapPins = document.querySelectorAll(`.map__pin:not(.map__pin--main)`);
+    mapPins.forEach((pin) => {
+      pin.remove();
+    });
   };
 
-  const onSuccess = (data) => {
-    const fragment = document.createDocumentFragment();
-    for (let i = 0; i < MAX_SIMILAR_PIN_COUNT; i++) {
-      if (data[i].offer !== undefined) {
-        fragment.appendChild(getElementWithSimpleLabel(data[i]));
-      }
+  const removeCard = () => {
+    const declarationCard = document.querySelector(`.map__card`);
+    if (declarationCard) {
+      declarationCard.remove();
     }
-    mapPins.appendChild(fragment);
+  };
+
+  const updatePins = () => {
+    const sameHousingType = pins.filter((housing) => {
+      switch (housingType.value) {
+        case `any`:
+          return housing.offer.type;
+      }
+      return housing.offer.type === housingType.value;
+    });
+    window.pins.createElements(sameHousingType);
+  };
+
+  housingType.addEventListener(`change`, (evt) => {
+    evt.preventDefault();
+    window.debounce(() => {
+      removePins();
+      removeCard();
+      updatePins(pins);
+    });
+  });
+
+  const onSuccess = (data) => {
+    pins = data;
+    updatePins(pins);
   };
 
   const onError = (error) => {

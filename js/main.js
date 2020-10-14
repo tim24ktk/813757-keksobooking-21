@@ -97,6 +97,7 @@
   window.main = {
     map: map,
     adForm: adForm,
-    blockElements: blockFilters
+    blockElements: blockFilters,
+    mapFilters: mapFilters
   };
 })();
