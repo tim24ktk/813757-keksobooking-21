@@ -2,34 +2,68 @@
 
 // модуль отрисовки меток на карте
 (() => {
-  const PIN_WIDTH = 50;
-  const PIN_HEIGHT = 70;
-  const MAX_SIMILAR_PIN_COUNT = 5;
-  const mapPins = window.main.map.querySelector(`.map__pins`);
-  const pinContent = document.querySelector(`#pin`).content.querySelector(`.map__pin`);
+  const MAX_ADVERT = 5;
+  const TYPE_ANY = `any`;
 
-  // создание DOM элемента на основе JS-объекта
-  const getElementWithSimpleLabel = (declaration) => {
-    const pinContentClone = pinContent.cloneNode(true);
-    const pinImg = pinContentClone.querySelector(`img`);
-    pinContentClone.style.left = `${declaration.location.x - PIN_WIDTH / 2}px`;
-    pinContentClone.style.top = `${declaration.location.y - PIN_HEIGHT}px`;
-    pinImg.src = declaration.author.avatar;
-    pinImg.alt = declaration.offer.title;
-    return pinContentClone;
+  const housingType = window.main.mapFilters.querySelector(`#housing-type`);
+
+  let adverts = [];
+
+  // ф-я удаляет пины которые уже отрисованы на карте
+  const removePins = () => {
+    const mapPins = document.querySelectorAll(`.map__pin:not(.map__pin--main)`);
+    mapPins.forEach((pin) => {
+      pin.remove();
+    });
   };
 
-  const onSuccess = (data) => {
-    const fragment = document.createDocumentFragment();
-    for (let i = 0; i < MAX_SIMILAR_PIN_COUNT; i++) {
-      if (data[i].offer !== undefined) {
-        fragment.appendChild(getElementWithSimpleLabel(data[i]));
+  const removeCard = () => {
+    const declarationCard = document.querySelector(`.map__card`);
+    if (declarationCard) {
+      declarationCard.remove();
+    }
+  };
+
+  const checkHousingType = (advert) => {
+    return housingType.value === TYPE_ANY || housingType.value === advert.offer.type;
+  };
+
+  const checkFilters = (advert) => {
+    return checkHousingType(advert);
+  };
+
+  const updatePins = () => {
+    const filteredAdverts = [];
+
+    for (let i = 0; i < adverts.length; i++) {
+      const advert = adverts[i];
+
+      if (checkFilters(advert)) {
+        filteredAdverts.push(advert);
+      }
+
+      if (filteredAdverts.length === MAX_ADVERT) {
+        break;
       }
     }
-    mapPins.appendChild(fragment);
+    window.pins.createElements(filteredAdverts);
   };
 
-  const onError = (error) => {
+  housingType.addEventListener(`change`, (evt) => {
+    evt.preventDefault();
+    window.debounce(() => {
+      removePins();
+      removeCard();
+      updatePins();
+    });
+  });
+
+  const onLoadSuccess = (data) => {
+    adverts = data;
+    updatePins();
+  };
+
+  const onLoadError = (error) => {
     const errorMessage = document.createElement(`div`);
     errorMessage.textContent = error;
     errorMessage.style.width = `400px`;
@@ -53,7 +87,7 @@
   };
 
   const createMapPins = () => {
-    window.load(onSuccess, onError);
+    window.load(onLoadSuccess, onLoadError);
   };
 
   window.map = {

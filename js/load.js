@@ -2,7 +2,7 @@
 
 (() => {
   const URL = `https://21.javascript.pages.academy/keksobooking/data`;
-  const TIMEOUT = 1000;
+  const TIMEOUT = 10000;
   const StatusCode = {
     OK: 200,
     BAD_REQUEST: 400,
