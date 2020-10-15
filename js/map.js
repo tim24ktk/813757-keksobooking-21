@@ -2,9 +2,12 @@
 
 // модуль отрисовки меток на карте
 (() => {
+  const MAX_ADVERT = 5;
+  const TYPE_ANY = `any`;
+
   const housingType = window.main.mapFilters.querySelector(`#housing-type`);
 
-  let pins = [];
+  let adverts = [];
 
   // ф-я удаляет пины которые уже отрисованы на карте
   const removePins = () => {
@@ -21,15 +24,29 @@
     }
   };
 
+  const checkHousingType = (advert) => {
+    return housingType.value === TYPE_ANY || housingType.value === advert.offer.type;
+  };
+
+  const checkFilters = (advert) => {
+    return checkHousingType(advert);
+  };
+
   const updatePins = () => {
-    const sameHousingType = pins.filter((housing) => {
-      switch (housingType.value) {
-        case `any`:
-          return housing.offer.type;
+    const filteredAdverts = [];
+
+    for (let i = 0; i < adverts.length; i++) {
+      const advert = adverts[i];
+
+      if (checkFilters(advert)) {
+        filteredAdverts.push(advert);
       }
-      return housing.offer.type === housingType.value;
-    });
-    window.pins.createElements(sameHousingType);
+
+      if (filteredAdverts.length === MAX_ADVERT) {
+        break;
+      }
+    }
+    window.pins.createElements(filteredAdverts);
   };
 
   housingType.addEventListener(`change`, (evt) => {
@@ -37,16 +54,16 @@
     window.debounce(() => {
       removePins();
       removeCard();
-      updatePins(pins);
+      updatePins();
     });
   });
 
-  const onSuccess = (data) => {
-    pins = data;
-    updatePins(pins);
+  const onLoadSuccess = (data) => {
+    adverts = data;
+    updatePins();
   };
 
-  const onError = (error) => {
+  const onLoadError = (error) => {
     const errorMessage = document.createElement(`div`);
     errorMessage.textContent = error;
     errorMessage.style.width = `400px`;
@@ -70,7 +87,7 @@
   };
 
   const createMapPins = () => {
-    window.load(onSuccess, onError);
+    window.load(onLoadSuccess, onLoadError);
   };
 
   window.map = {
