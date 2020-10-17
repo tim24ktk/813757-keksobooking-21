@@ -4,6 +4,7 @@
   const MAIN_PIN_WIDTH = 65;
   const MAIN_PIN_HEIGHT_ACTIVE = 80;
   const ENTER = `Enter`;
+  const ESCAPE = `Escape`;
   const MOUSE_EVENT_INDEX = 0;
 
   // переменные для активации страницы и валидации формы!!!
@@ -93,11 +94,21 @@
     }
   };
 
+  const escapeKeyDown = (evt, escapeActionCb) => {
+    if (evt.key === ESCAPE) {
+      evt.preventDefault();
+      escapeActionCb();
+    }
+  };
+
   // экспорт
   window.main = {
     map: map,
     adForm: adForm,
     blockElements: blockFilters,
-    mapFilters: mapFilters
+    mapFilters: mapFilters,
+    escapeKeyDown: escapeKeyDown,
+    enterKeyDown: enterKeyDown,
+    clickMouseDown: clickMouseDown
   };
 })();

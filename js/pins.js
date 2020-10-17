@@ -7,6 +7,14 @@
   const mapPins = window.main.map.querySelector(`.map__pins`);
   const pinContent = document.querySelector(`#pin`).content.querySelector(`.map__pin`);
 
+  const removePinActive = () => {
+    const clickedElement = mapPins.querySelector(`.map__pin--active`);
+
+    if (clickedElement) {
+      clickedElement.classList.remove('map__pin--active');
+    }
+  };
+
   // создание DOM элемента на основе JS-объекта
   const getElementWithSimpleLabel = (declaration) => {
     const pinContentClone = pinContent.cloneNode(true);
@@ -15,6 +23,17 @@
     pinContentClone.style.top = `${declaration.location.y - PIN_HEIGHT}px`;
     pinImg.src = declaration.author.avatar;
     pinImg.alt = declaration.offer.title;
+
+    pinContentClone.addEventListener(`click`, () => {
+      window.map.removeCard();
+
+      removePinActive();
+
+      pinContentClone.classList.add(`map__pin--active`);
+
+      window.card.createCard(declaration);
+    });
+
     return pinContentClone;
   };
 
@@ -30,6 +49,7 @@
   };
 
   window.pins = {
-    createElements: createSimilarElements
+    createElements: createSimilarElements,
+    removeActive: removePinActive
   };
 })();

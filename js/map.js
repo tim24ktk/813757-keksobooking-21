@@ -21,6 +21,7 @@
     const declarationCard = document.querySelector(`.map__card`);
     if (declarationCard) {
       declarationCard.remove();
+      window.pins.removeActive();
     }
   };
 
@@ -91,6 +92,7 @@
   };
 
   window.map = {
-    createPins: createMapPins
+    createPins: createMapPins,
+    removeCard: removeCard
   };
 })();
