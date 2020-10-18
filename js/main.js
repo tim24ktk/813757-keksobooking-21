@@ -94,7 +94,7 @@
     }
   };
 
-  const escapeKeyDown = (evt, escapeActionCb) => {
+  const keydownEscape = (evt, escapeActionCb) => {
     if (evt.key === ESCAPE) {
       evt.preventDefault();
       escapeActionCb();
@@ -107,7 +107,7 @@
     adForm: adForm,
     blockElements: blockFilters,
     mapFilters: mapFilters,
-    escapeKeyDown: escapeKeyDown,
+    keydownEscape: keydownEscape,
     enterKeyDown: enterKeyDown,
     clickMouseDown: clickMouseDown
   };

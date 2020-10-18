@@ -8,21 +8,21 @@
   const pinContent = document.querySelector(`#pin`).content.querySelector(`.map__pin`);
 
   const removePinActive = () => {
-    const clickedElement = mapPins.querySelector(`.map__pin--active`);
+    const clickedPin = mapPins.querySelector(`.map__pin--active`);
 
-    if (clickedElement) {
-      clickedElement.classList.remove('map__pin--active');
+    if (clickedPin) {
+      clickedPin.classList.remove(`map__pin--active`);
     }
   };
 
   // создание DOM элемента на основе JS-объекта
-  const getElementWithSimpleLabel = (declaration) => {
+  const getElementWithSimpleLabel = (advert) => {
     const pinContentClone = pinContent.cloneNode(true);
     const pinImg = pinContentClone.querySelector(`img`);
-    pinContentClone.style.left = `${declaration.location.x - PIN_WIDTH / 2}px`;
-    pinContentClone.style.top = `${declaration.location.y - PIN_HEIGHT}px`;
-    pinImg.src = declaration.author.avatar;
-    pinImg.alt = declaration.offer.title;
+    pinContentClone.style.left = `${advert.location.x - PIN_WIDTH / 2}px`;
+    pinContentClone.style.top = `${advert.location.y - PIN_HEIGHT}px`;
+    pinImg.src = advert.author.avatar;
+    pinImg.alt = advert.offer.title;
 
     pinContentClone.addEventListener(`click`, () => {
       window.map.removeCard();
@@ -31,7 +31,7 @@
 
       pinContentClone.classList.add(`map__pin--active`);
 
-      window.card.createCard(declaration);
+      window.card.create(advert);
     });
 
     return pinContentClone;
