@@ -7,14 +7,33 @@
   const mapPins = window.main.map.querySelector(`.map__pins`);
   const pinContent = document.querySelector(`#pin`).content.querySelector(`.map__pin`);
 
+  const removePinActive = () => {
+    const clickedPin = mapPins.querySelector(`.map__pin--active`);
+
+    if (clickedPin) {
+      clickedPin.classList.remove(`map__pin--active`);
+    }
+  };
+
   // создание DOM элемента на основе JS-объекта
-  const getElementWithSimpleLabel = (declaration) => {
+  const getElementWithSimpleLabel = (advert) => {
     const pinContentClone = pinContent.cloneNode(true);
     const pinImg = pinContentClone.querySelector(`img`);
-    pinContentClone.style.left = `${declaration.location.x - PIN_WIDTH / 2}px`;
-    pinContentClone.style.top = `${declaration.location.y - PIN_HEIGHT}px`;
-    pinImg.src = declaration.author.avatar;
-    pinImg.alt = declaration.offer.title;
+    pinContentClone.style.left = `${advert.location.x - PIN_WIDTH / 2}px`;
+    pinContentClone.style.top = `${advert.location.y - PIN_HEIGHT}px`;
+    pinImg.src = advert.author.avatar;
+    pinImg.alt = advert.offer.title;
+
+    pinContentClone.addEventListener(`click`, () => {
+      window.map.removeCard();
+
+      removePinActive();
+
+      pinContentClone.classList.add(`map__pin--active`);
+
+      window.card.create(advert);
+    });
+
     return pinContentClone;
   };
 
@@ -30,6 +49,7 @@
   };
 
   window.pins = {
-    createElements: createSimilarElements
+    createElements: createSimilarElements,
+    removeActive: removePinActive
   };
 })();

@@ -4,6 +4,7 @@
   const MAIN_PIN_WIDTH = 65;
   const MAIN_PIN_HEIGHT_ACTIVE = 80;
   const ENTER = `Enter`;
+  const ESCAPE = `Escape`;
   const MOUSE_EVENT_INDEX = 0;
 
   // переменные для активации страницы и валидации формы!!!
@@ -52,13 +53,13 @@
 
   // активация страницы c помощью Enter
   const onMapPinMainEnterKeyDown = (evt) => {
-    enterKeyDown(evt, activatePage);
+    checkEnter(evt, activatePage);
   };
   mapPinMain.addEventListener(`keydown`, onMapPinMainEnterKeyDown);
 
   // активация страницы с помощью мыши
   const onMapPinMainMouseDown = (evt) => {
-    clickMouseDown(evt, activatePage);
+    checkMouseDown(evt, activatePage);
   };
 
   mapPinMain.addEventListener(`mousedown`, onMapPinMainMouseDown);
@@ -81,15 +82,22 @@
   blockFilling();
 
   // общее
-  const enterKeyDown = (evt, enterActionCb) => {
+  const checkEnter = (evt, enterActionCb) => {
     if (evt.key === ENTER) {
       enterActionCb();
     }
   };
 
-  const clickMouseDown = (evt, clickActionCb) => {
+  const checkMouseDown = (evt, clickActionCb) => {
     if (evt.button === MOUSE_EVENT_INDEX) {
       clickActionCb();
+    }
+  };
+
+  const checkEscape = (evt, escapeActionCb) => {
+    if (evt.key === ESCAPE) {
+      evt.preventDefault();
+      escapeActionCb();
     }
   };
 
@@ -98,6 +106,8 @@
     map: map,
     adForm: adForm,
     blockElements: blockFilters,
-    mapFilters: mapFilters
+    mapFilters: mapFilters,
+    checkEscape: checkEscape,
+    checkMouseDown: checkMouseDown
   };
 })();
