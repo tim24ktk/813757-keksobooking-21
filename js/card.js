@@ -79,27 +79,35 @@
     }
 
     // удаление элемента списка
-    for (let i = 0; i < features.length; i++) {
-      if (!features[i].classList.contains(`popup__feature--${advert.offer.features[i]}`)) {
-        features[i].remove();
+    if (features !== undefined || features.length !== 0) {
+      for (let i = 0; i < features.length; i++) {
+        if (!features[i].classList.contains(`popup__feature--${advert.offer.features[i]}`)) {
+          features[i].remove();
+        }
       }
+    } else {
+      features.remove();
     }
 
     // вставить фото в каждый отдельный img
     const popupPhotos = announcementСardClone.querySelector(`.popup__photos`);
     const popupPhoto = announcementСardClone.querySelector(`.popup__photo`);
 
-    advert.offer.photos.forEach((photo) => {
-      const clonedImage = popupPhoto.cloneNode(true);
-      clonedImage.src = photo;
-      popupPhotos.appendChild(clonedImage);
-    });
+    if (advert.offer.photos !== undefined || advert.offer.photos.length !== 0) {
+      advert.offer.photos.forEach((photo) => {
+        const clonedImage = popupPhoto.cloneNode(true);
+        clonedImage.src = photo;
+        popupPhotos.appendChild(clonedImage);
+      });
+    } else {
+      advert.offer.photos.remove();
+    }
 
     popupPhotos.removeChild(popupPhoto);
 
     const popupClose = announcementСardClone.querySelector(`.popup__close`);
 
-    document.addEventListener(`keydown`, onKeydownEscape);
+    document.addEventListener(`keydown`, onEscapeKeydown);
     popupClose.addEventListener(`click`, onPopupCloseClick);
 
     return announcementСardClone;
@@ -110,15 +118,15 @@
 
   const closePopup = () => {
     window.map.removeCard();
-    document.removeEventListener(`keydown`, onKeydownEscape);
+    document.removeEventListener(`keydown`, onEscapeKeydown);
   };
 
-  const onKeydownEscape = (evt) => {
-    window.main.keydownEscape(evt, closePopup);
+  const onEscapeKeydown = (evt) => {
+    window.main.checkEscape(evt, closePopup);
   };
 
   const onPopupCloseClick = (evt) => {
-    window.main.clickMouseDown(evt, closePopup);
+    window.main.checkMouseDown(evt, closePopup);
   };
 
   const createCard = (item) => {

@@ -53,13 +53,13 @@
 
   // активация страницы c помощью Enter
   const onMapPinMainEnterKeyDown = (evt) => {
-    enterKeyDown(evt, activatePage);
+    checkEnter(evt, activatePage);
   };
   mapPinMain.addEventListener(`keydown`, onMapPinMainEnterKeyDown);
 
   // активация страницы с помощью мыши
   const onMapPinMainMouseDown = (evt) => {
-    clickMouseDown(evt, activatePage);
+    checkMouseDown(evt, activatePage);
   };
 
   mapPinMain.addEventListener(`mousedown`, onMapPinMainMouseDown);
@@ -82,19 +82,19 @@
   blockFilling();
 
   // общее
-  const enterKeyDown = (evt, enterActionCb) => {
+  const checkEnter = (evt, enterActionCb) => {
     if (evt.key === ENTER) {
       enterActionCb();
     }
   };
 
-  const clickMouseDown = (evt, clickActionCb) => {
+  const checkMouseDown = (evt, clickActionCb) => {
     if (evt.button === MOUSE_EVENT_INDEX) {
       clickActionCb();
     }
   };
 
-  const keydownEscape = (evt, escapeActionCb) => {
+  const checkEscape = (evt, escapeActionCb) => {
     if (evt.key === ESCAPE) {
       evt.preventDefault();
       escapeActionCb();
@@ -107,8 +107,7 @@
     adForm: adForm,
     blockElements: blockFilters,
     mapFilters: mapFilters,
-    keydownEscape: keydownEscape,
-    enterKeyDown: enterKeyDown,
-    clickMouseDown: clickMouseDown
+    checkEscape: checkEscape,
+    checkMouseDown: checkMouseDown
   };
 })();
