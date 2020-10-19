@@ -28,7 +28,6 @@
     const popupTextCapacity = announcementСardClone.querySelector(`.popup__text--capacity`);
     const popupTextTime = announcementСardClone.querySelector(`.popup__text--time`);
     const popupDescription = announcementСardClone.querySelector(`.popup__description`);
-    const features = announcementСardClone.querySelector(`.popup__features`).children;
 
     if (advert.offer.price !== undefined) {
       popupTextPrice.textContent = `${advert.offer.price}₽/ночь`;
@@ -78,29 +77,30 @@
       popupDescription.remove();
     }
 
-    // удаление элемента списка
-    if (features !== undefined || features.length !== 0) {
-      for (let i = 0; i < features.length; i++) {
-        if (!features[i].classList.contains(`popup__feature--${advert.offer.features[i]}`)) {
-          features[i].remove();
-        }
-      }
-    } else {
-      features.remove();
+    const features = announcementСardClone.querySelector(`.popup__features`);
+
+    features.innerHTML = ``;
+    // создание списка features
+    if (advert.offer.features !== undefined) {
+      const fragment = document.createDocumentFragment();
+      advert.offer.features.forEach((feature) => {
+        const featureItem = document.createElement(`li`);
+        featureItem.className = `popup__feature popup__feature--${feature}`;
+        fragment.appendChild(featureItem);
+      });
+      features.appendChild(fragment);
     }
 
     // вставить фото в каждый отдельный img
     const popupPhotos = announcementСardClone.querySelector(`.popup__photos`);
     const popupPhoto = announcementСardClone.querySelector(`.popup__photo`);
 
-    if (advert.offer.photos !== undefined || advert.offer.photos.length !== 0) {
+    if (advert.offer.photos !== undefined) {
       advert.offer.photos.forEach((photo) => {
         const clonedImage = popupPhoto.cloneNode(true);
         clonedImage.src = photo;
         popupPhotos.appendChild(clonedImage);
       });
-    } else {
-      advert.offer.photos.remove();
     }
 
     popupPhotos.removeChild(popupPhoto);
