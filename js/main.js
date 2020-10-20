@@ -102,6 +102,8 @@
     checkEscape: checkEscape,
     checkMouseDown: checkMouseDown,
     mapPin: mapPinMain,
-    address: address
+    address: address,
+    pinWidth: MAIN_PIN_WIDTH,
+    pinHeightActive: MAIN_PIN_HEIGHT_ACTIVE
   };
 })();

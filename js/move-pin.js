@@ -1,59 +1,62 @@
 'use strict';
 
 (() => {
-  const MAIN_PIN_WIDTH = 65;
-  const MAIN_PIN_HEIGHT_ACTIVE = 80;
   const MIN_Y = 130;
   const MAX_Y = 630;
-
-
   const mapPins = document.querySelector(`.map__pins`);
+
   window.main.mapPin.addEventListener(`mousedown`, (evt) => {
     evt.preventDefault();
     // координаты точки с которорй начали перемещать pin
-    let startCoords = {
+    let startCoordinat = {
       x: evt.clientX,
       y: evt.clientY
     };
 
-    const onMouseMove = (moveEvt) => {
+    const onMapPinsMouseMove = (moveEvt) => {
       moveEvt.preventDefault();
 
       // смещение относительно стартовой точки
-      let shift = {
-        x: startCoords.x - moveEvt.clientX,
-        y: startCoords.y - moveEvt.clientY
+      const shift = {
+        x: startCoordinat.x - moveEvt.clientX,
+        y: startCoordinat.y - moveEvt.clientY
       };
 
       // перезаписывает координаты стартовой точки
-      startCoords = {
+      startCoordinat = {
         x: moveEvt.clientX,
         y: moveEvt.clientY
       };
 
       // текущие координаты
-      let currentCoordinats = {
-        x: `${window.main.mapPin.offsetLeft - shift.x}`,
-        y: `${window.main.mapPin.offsetTop - shift.y}`
+      const currentCoordinat = {
+        x: window.main.mapPin.offsetLeft - shift.x,
+        y: window.main.mapPin.offsetTop - shift.y
       };
 
-      if (currentCoordinats.x >= -MAIN_PIN_WIDTH / 2
-         && currentCoordinats.x <= window.main.map.clientWidth - MAIN_PIN_WIDTH / 2
-         && currentCoordinats.y >= MIN_Y
-         && currentCoordinats.y <= MAX_Y) {
-        window.main.mapPin.style.left = `${currentCoordinats.x}px`;
-        window.main.mapPin.style.top = `${currentCoordinats.y}px`;
-        window.form.renderAddress(+currentCoordinats.x + MAIN_PIN_WIDTH / 2, +currentCoordinats.y + MAIN_PIN_HEIGHT_ACTIVE);
+      if (currentCoordinat.x >= -window.main.pinWidth / 2
+         && currentCoordinat.x <= window.main.map.clientWidth - window.main.pinWidth / 2
+         && currentCoordinat.y >= (MIN_Y - window.main.pinHeightActive)
+         && currentCoordinat.y <= (MAX_Y - window.main.pinHeightActive)) {
+
+        window.main.mapPin.style.left = `${currentCoordinat.x}px`;
+        window.main.mapPin.style.top = `${currentCoordinat.y}px`;
+        window.form.renderAddress(currentCoordinat.x + Math.round(window.main.pinWidth / 2), currentCoordinat.y + window.main.pinHeightActive);
       }
     };
 
-    const onMouseUp = (upEvt) => {
+    const onMapPinsMouseUp = (upEvt) => {
       upEvt.preventDefault();
-      mapPins.removeEventListener(`mousemove`, onMouseMove);
-      mapPins.removeEventListener(`mouseup`, onMouseUp);
+      mapPins.removeEventListener(`mousemove`, onMapPinsMouseMove);
+      mapPins.removeEventListener(`mouseup`, onMapPinsMouseUp);
     };
 
-    mapPins.addEventListener(`mousemove`, onMouseMove);
-    mapPins.addEventListener(`mouseup`, onMouseUp);
+    mapPins.addEventListener(`mousemove`, onMapPinsMouseMove);
+    mapPins.addEventListener(`mouseup`, onMapPinsMouseUp);
+
+    mapPins.addEventListener(`mouseleave`, () => {
+      mapPins.removeEventListener(`mousemove`, onMapPinsMouseMove);
+      mapPins.removeEventListener(`mouseup`, onMapPinsMouseUp);
+    });
   });
 })();
