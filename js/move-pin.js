@@ -3,12 +3,13 @@
 (() => {
   const MIN_Y = 130;
   const MAX_Y = 630;
+  const COORDINATE_CORRECTION = 1;
   const mapPins = document.querySelector(`.map__pins`);
 
   window.main.mapPin.addEventListener(`mousedown`, (evt) => {
     evt.preventDefault();
     // координаты точки с которорй начали перемещать pin
-    let startCoordinat = {
+    let startCoordinate = {
       x: evt.clientX,
       y: evt.clientY
     };
@@ -18,30 +19,30 @@
 
       // смещение относительно стартовой точки
       const shift = {
-        x: startCoordinat.x - moveEvt.clientX,
-        y: startCoordinat.y - moveEvt.clientY
+        x: startCoordinate.x - moveEvt.clientX,
+        y: startCoordinate.y - moveEvt.clientY
       };
 
       // перезаписывает координаты стартовой точки
-      startCoordinat = {
+      startCoordinate = {
         x: moveEvt.clientX,
         y: moveEvt.clientY
       };
 
       // текущие координаты
-      const currentCoordinat = {
+      const currentCoordinate = {
         x: window.main.mapPin.offsetLeft - shift.x,
         y: window.main.mapPin.offsetTop - shift.y
       };
 
-      if (currentCoordinat.x >= -window.main.pinWidth / 2
-         && currentCoordinat.x <= window.main.map.clientWidth - window.main.pinWidth / 2
-         && currentCoordinat.y >= (MIN_Y - window.main.pinHeightActive)
-         && currentCoordinat.y <= (MAX_Y - window.main.pinHeightActive)) {
+      if (currentCoordinate.x >= -window.main.pinWidth / 2
+         && currentCoordinate.x <= (window.main.map.clientWidth - window.main.pinWidth / 2 + COORDINATE_CORRECTION)
+         && currentCoordinate.y >= (MIN_Y - window.main.pinHeightActive)
+         && currentCoordinate.y <= (MAX_Y - window.main.pinHeightActive)) {
 
-        window.main.mapPin.style.left = `${currentCoordinat.x}px`;
-        window.main.mapPin.style.top = `${currentCoordinat.y}px`;
-        window.form.renderAddress(currentCoordinat.x + Math.round(window.main.pinWidth / 2), currentCoordinat.y + window.main.pinHeightActive);
+        window.main.mapPin.style.left = `${currentCoordinate.x}px`;
+        window.main.mapPin.style.top = `${currentCoordinate.y}px`;
+        window.form.renderAddress(currentCoordinate.x + Math.floor(window.main.pinWidth / 2), currentCoordinate.y + window.main.pinHeightActive);
       }
     };
 
