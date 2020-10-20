@@ -13,6 +13,11 @@
   const adTitleInput = window.main.adForm.querySelector(`#title`);
   const type = document.querySelector(`#type`);
 
+  // адрес активированного пина
+  const renderAddress = (x, y) => {
+    window.main.address.value = `${x}, ${y}`;
+  };
+
   const onAdFormTimeChange = (evt) => {
     timeIn.value = evt.target.value;
     timeOut.value = evt.target.value;
@@ -87,5 +92,9 @@
     const className = errorMessage !== `` ? `red` : ``;
     roomNumber.style.borderColor = className;
     capacity.style.borderColor = className;
+  };
+
+  window.form = {
+    renderAddress: renderAddress,
   };
 })();

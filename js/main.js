@@ -6,8 +6,6 @@
   const ENTER = `Enter`;
   const ESCAPE = `Escape`;
   const MOUSE_EVENT_INDEX = 0;
-
-  // переменные для активации страницы и валидации формы!!!
   const map = document.querySelector(`.map`);
   const mapFilters = map.querySelector(`.map__filters`);
   const adForm = document.querySelector(`.ad-form`);
@@ -15,7 +13,6 @@
   const adFormChildren = adForm.children;
   const address = adForm.querySelector(`#address`);
   const mapPinMain = document.querySelector(`.map__pin--main`);
-
   const mainPinPositionX = mapPinMain.offsetLeft;
   const mainPinPositionY = mapPinMain.offsetTop;
 
@@ -30,11 +27,6 @@
     y: Math.round(mainPinPositionY + MAIN_PIN_HEIGHT_ACTIVE),
   };
 
-  // адрес активированного пина
-  const renderAddress = () => {
-    address.value = `${mainPinAddress.x}, ${mainPinAddress.y}`;
-  };
-
   // функция активации страницы
   const activatePage = () => {
     map.classList.remove(`map--faded`);
@@ -46,7 +38,7 @@
     for (const adFormChild of adFormChildren) {
       adFormChild.disabled = false;
     }
-    renderAddress();
+    window.form.renderAddress(mainPinAddress.x, mainPinAddress.y);
     mapPinMain.removeEventListener(`mousedown`, onMapPinMainMouseDown);
     mapPinMain.removeEventListener(`keydown`, onMapPinMainEnterKeyDown);
   };
@@ -108,6 +100,8 @@
     blockElements: blockFilters,
     mapFilters: mapFilters,
     checkEscape: checkEscape,
-    checkMouseDown: checkMouseDown
+    checkMouseDown: checkMouseDown,
+    mapPin: mapPinMain,
+    address: address
   };
 })();
