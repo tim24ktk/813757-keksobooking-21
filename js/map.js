@@ -88,11 +88,14 @@
   };
 
   const createMapPins = () => {
-    window.load(onLoadSuccess, onLoadError);
+    window.backend.download(onLoadSuccess, onLoadError);
   };
 
   window.map = {
     createPins: createMapPins,
-    removeCard: removeCard
+    removeCard: removeCard,
+    removePins: removePins,
+    updatePins: updatePins,
+    onLoadSuccess: onLoadSuccess
   };
 })();

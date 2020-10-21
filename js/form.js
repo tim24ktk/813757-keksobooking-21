@@ -4,6 +4,8 @@
   // ф-ия синхронного переключения времени въезда / выезда
   const MIN_TITLE_LENGTH = 30;
   const MAX_TITLE_LENGTH = 100;
+  const LEFT = 570;
+  const TOP = 375;
   const adFormTime = window.main.adForm.querySelector(`.ad-form__element--time`);
   const price = window.main.adForm.querySelector(`#price`);
   const timeIn = adFormTime.querySelector(`#timein`);
@@ -94,7 +96,85 @@
     capacity.style.borderColor = className;
   };
 
+  const successMessage = document.querySelector(`#success`).content.querySelector(`.success`);
+  const main = document.querySelector(`main`);
+
+  const showSuccesMessage = () => {
+    const clonedSuccessMessage = successMessage.cloneNode(true);
+    main.appendChild(clonedSuccessMessage);
+  };
+
+  const errorMessage = document.querySelector(`#error`).content.querySelector(`.error`);
+
+  const showErrorMessage = () => {
+    const clonedErrorMessage = errorMessage.cloneNode(true);
+    main.appendChild(clonedErrorMessage);
+
+    const errorButton = clonedErrorMessage.querySelector(`.error__button`);
+    errorButton.addEventListener(`click`, removeMessage);
+  };
+
+  const removeMessage = () => {
+    const success = document.querySelector(`.success`);
+    const error = document.querySelector(`.error`);
+
+    return success ? success.remove() : error.remove();
+  };
+
+  const onDocumentKeyDown = (evt) => {
+    window.main.checkEscape(evt, removeMessage);
+    document.removeEventListener(`keydown`, onDocumentKeyDown);
+    document.removeEventListener(`mousedown`, onDocumentMouseDown);
+  };
+
+  const onDocumentMouseDown = (evt) => {
+    window.main.checkMouseDown(evt, removeMessage);
+    document.removeEventListener(`keydown`, onDocumentKeyDown);
+    document.removeEventListener(`mousedown`, onDocumentMouseDown);
+  };
+
+  const onUploadSucces = (data) => {
+    data.reset();
+    window.main.map.classList.add(`map--faded`);
+    window.main.adForm.classList.add(`ad-form--disabled`);
+    window.main.blockFilters();
+    window.main.blockFilling();
+    window.map.removePins();
+    window.main.mapPin.style.left = `${LEFT}px`;
+    window.main.mapPin.style.top = `${TOP}px`;
+    window.main.addEvent();
+    showSuccesMessage();
+    document.addEventListener(`keydown`, onDocumentKeyDown);
+    document.addEventListener(`mousedown`, onDocumentMouseDown);
+  };
+
+  const onUploadError = () => {
+    showErrorMessage();
+    document.addEventListener(`keydown`, onDocumentKeyDown);
+    document.addEventListener(`mousedown`, onDocumentMouseDown);
+  };
+
+  const formReset = document.querySelector(`.ad-form__reset`);
+
+  const onFormResetClick = (evt) => {
+    evt.preventDefault();
+    window.main.adForm.reset();
+    window.main.mapFilters.reset();
+    window.main.mapPin.style.left = `${LEFT}px`;
+    window.main.mapPin.style.top = `${TOP}px`;
+    window.map.removeCard();
+    renderAddress(window.main.pinAddressX, window.main.pinAddressY);
+    window.map.removePins();
+  };
+
+  formReset.addEventListener(`click`, onFormResetClick);
+
+  window.main.adForm.addEventListener(`submit`, (evt) => {
+    evt.preventDefault();
+    window.backend.upload(window.main.adForm, onUploadSucces, onUploadError);
+  });
+
   window.form = {
-    renderAddress: renderAddress,
+    renderAddress: renderAddress
   };
 })();
