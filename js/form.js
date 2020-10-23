@@ -28,7 +28,7 @@
 
   // ф-я изменения placeholder и проверки мин цены в зависимости от типа жилья
   const onTypeChange = (evt) => {
-    if (evt.target.value === `bungalo`) {
+    if (evt.target.value === `bungalow`) {
       price.placeholder = `0`;
       price.min = `0`;
     } else if (evt.target.value === `flat`) {
@@ -124,40 +124,16 @@
   const onDocumentKeyDown = (evt) => {
     window.main.checkEscape(evt, removeMessage);
     document.removeEventListener(`keydown`, onDocumentKeyDown);
-    document.removeEventListener(`mousedown`, onDocumentMouseDown);
+    document.removeEventListener(`click`, onDocumentClick);
   };
 
-  const onDocumentMouseDown = (evt) => {
+  const onDocumentClick = (evt) => {
     window.main.checkMouseDown(evt, removeMessage);
     document.removeEventListener(`keydown`, onDocumentKeyDown);
-    document.removeEventListener(`mousedown`, onDocumentMouseDown);
+    document.removeEventListener(`click`, onDocumentClick);
   };
 
-  const onUploadSucces = (data) => {
-    data.reset();
-    window.main.map.classList.add(`map--faded`);
-    window.main.adForm.classList.add(`ad-form--disabled`);
-    window.main.blockFilters();
-    window.main.blockFilling();
-    window.map.removePins();
-    window.main.mapPin.style.left = `${LEFT}px`;
-    window.main.mapPin.style.top = `${TOP}px`;
-    window.main.addEvent();
-    showSuccesMessage();
-    document.addEventListener(`keydown`, onDocumentKeyDown);
-    document.addEventListener(`mousedown`, onDocumentMouseDown);
-  };
-
-  const onUploadError = () => {
-    showErrorMessage();
-    document.addEventListener(`keydown`, onDocumentKeyDown);
-    document.addEventListener(`mousedown`, onDocumentMouseDown);
-  };
-
-  const formReset = document.querySelector(`.ad-form__reset`);
-
-  const onFormResetClick = (evt) => {
-    evt.preventDefault();
+  const deactivatePage = () => {
     window.main.adForm.reset();
     window.main.mapFilters.reset();
     window.main.mapPin.style.left = `${LEFT}px`;
@@ -165,6 +141,29 @@
     window.map.removeCard();
     renderAddress(window.main.pinAddressX, window.main.pinAddressY);
     window.map.removePins();
+    window.main.map.classList.add(`map--faded`);
+    window.main.adForm.classList.add(`ad-form--disabled`);
+    window.main.addEvent();
+  };
+
+  const onUploadSucces = () => {
+    deactivatePage();
+    showSuccesMessage();
+    document.addEventListener(`keydown`, onDocumentKeyDown);
+    document.addEventListener(`click`, onDocumentClick);
+  };
+
+  const onUploadError = () => {
+    showErrorMessage();
+    document.addEventListener(`keydown`, onDocumentKeyDown);
+    document.addEventListener(`click`, onDocumentClick);
+  };
+
+  const formReset = document.querySelector(`.ad-form__reset`);
+
+  const onFormResetClick = (evt) => {
+    evt.preventDefault();
+    deactivatePage();
   };
 
   formReset.addEventListener(`click`, onFormResetClick);
