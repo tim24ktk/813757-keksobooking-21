@@ -37,6 +37,7 @@
           break;
         case StatusCode.SERVICE_UNAVAILABLE:
           error = `Сервис недоступен`;
+          break;
         default:
           error = `Cтатус ответа: : ${xhr.status} ${xhr.statusText}`;
       }
