@@ -100,7 +100,6 @@
   window.main = {
     map: map,
     adForm: adForm,
-    blockElements: blockFilters,
     mapFilters: mapFilters,
     checkEscape: checkEscape,
     checkMouseDown: checkMouseDown,

@@ -99,7 +99,7 @@
   const successMessage = document.querySelector(`#success`).content.querySelector(`.success`);
   const main = document.querySelector(`main`);
 
-  const showSuccesMessage = () => {
+  const succesMessage = () => {
     const clonedSuccessMessage = successMessage.cloneNode(true);
     main.appendChild(clonedSuccessMessage);
   };
@@ -117,7 +117,7 @@
   const removeMessage = () => {
     const success = document.querySelector(`.success`);
     const error = document.querySelector(`.error`);
-
+    removeEvent();
     return success ? success.remove() : error.remove();
   };
 
@@ -133,30 +133,28 @@
 
   const onDocumentKeyDown = (evt) => {
     window.main.checkEscape(evt, removeMessage);
-    removeEvent();
   };
 
   const onDocumentClick = (evt) => {
     window.main.checkMouseDown(evt, removeMessage);
-    removeEvent();
   };
 
   const deactivatePage = () => {
     window.main.adForm.reset();
     window.main.mapFilters.reset();
-    window.main.mapPin.style.left = `${LEFT}px`;
-    window.main.mapPin.style.top = `${TOP}px`;
-    window.map.removeCard();
-    renderAddress(window.main.pinAddressX, window.main.pinAddressY);
-    window.map.removePins();
     window.main.map.classList.add(`map--faded`);
     window.main.adForm.classList.add(`ad-form--disabled`);
+    window.main.blockFilters();
+    window.main.blockFilling();
+    window.map.removePins();
+    window.main.mapPin.style.left = `${LEFT}px`;
+    window.main.mapPin.style.top = `${TOP}px`;
     window.main.addEvent();
   };
 
   const onUploadSucces = () => {
     deactivatePage();
-    showSuccesMessage();
+    succesMessage();
     addEvent();
   };
 
@@ -169,6 +167,7 @@
 
   const onFormResetClick = (evt) => {
     evt.preventDefault();
+
     deactivatePage();
   };
 
