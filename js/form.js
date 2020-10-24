@@ -1,7 +1,6 @@
 'use strict';
 
 (() => {
-  // ф-ия синхронного переключения времени въезда / выезда
   const MIN_TITLE_LENGTH = 30;
   const MAX_TITLE_LENGTH = 100;
   const LEFT = 570;
@@ -20,6 +19,7 @@
     window.main.address.value = `${x}, ${y}`;
   };
 
+  // ф-ия синхронного переключения времени въезда / выезда
   const onAdFormTimeChange = (evt) => {
     timeIn.value = evt.target.value;
     timeOut.value = evt.target.value;
@@ -121,16 +121,24 @@
     return success ? success.remove() : error.remove();
   };
 
-  const onDocumentKeyDown = (evt) => {
-    window.main.checkEscape(evt, removeMessage);
+  const addEvent = () => {
+    document.addEventListener(`keydown`, onDocumentKeyDown);
+    document.addEventListener(`click`, onDocumentClick);
+  };
+
+  const removeEvent = () => {
     document.removeEventListener(`keydown`, onDocumentKeyDown);
     document.removeEventListener(`click`, onDocumentClick);
   };
 
+  const onDocumentKeyDown = (evt) => {
+    window.main.checkEscape(evt, removeMessage);
+    removeEvent();
+  };
+
   const onDocumentClick = (evt) => {
     window.main.checkMouseDown(evt, removeMessage);
-    document.removeEventListener(`keydown`, onDocumentKeyDown);
-    document.removeEventListener(`click`, onDocumentClick);
+    removeEvent();
   };
 
   const deactivatePage = () => {
@@ -149,14 +157,12 @@
   const onUploadSucces = () => {
     deactivatePage();
     showSuccesMessage();
-    document.addEventListener(`keydown`, onDocumentKeyDown);
-    document.addEventListener(`click`, onDocumentClick);
+    addEvent();
   };
 
   const onUploadError = () => {
     showErrorMessage();
-    document.addEventListener(`keydown`, onDocumentKeyDown);
-    document.addEventListener(`click`, onDocumentClick);
+    addEvent();
   };
 
   const formReset = document.querySelector(`.ad-form__reset`);
