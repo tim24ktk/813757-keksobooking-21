@@ -175,7 +175,7 @@
 
   window.main.adForm.addEventListener(`submit`, (evt) => {
     evt.preventDefault();
-    window.backend.upload(window.main.adForm, onUploadSucces, onUploadError);
+    window.backend.upload(new FormData(window.main.adForm), onUploadSucces, onUploadError);
   });
 
   window.form = {

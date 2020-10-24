@@ -15,7 +15,7 @@
     SERVICE_UNAVAILABLE: 503
   };
 
-  const download = (onSuccess, onError) => {
+  const checkRequest = (method, url, onSuccess, onError, data) => {
     const xhr = new XMLHttpRequest();
 
     xhr.responseType = `json`;
@@ -32,6 +32,11 @@
         case StatusCode.NOT_FOUND:
           error = `Ничего не найдено`;
           break;
+        case StatusCode.INTERNAL_SERVER_ERROR:
+          error = `Внутренняя ошибка сервера`;
+          break;
+        case StatusCode.SERVICE_UNAVAILABLE:
+          error = `Сервис недоступен`;
         default:
           error = `Cтатус ответа: : ${xhr.status} ${xhr.statusText}`;
       }
@@ -50,34 +55,17 @@
 
     xhr.timeout = TIMEOUT;
 
-    xhr.open(`GET`, URL.download);
-    xhr.send();
+    xhr.open(method, url);
+
+    return method === `GET` ? xhr.send() : xhr.send(data);
   };
 
-  const upload = (data, onUploadSucces, onUploadError) => {
-    const xhr = new XMLHttpRequest();
-    const formData = new FormData(data);
+  const download = (onSuccess, onError) => {
+    checkRequest(`GET`, URL.download, onSuccess, onError);
+  };
 
-    xhr.addEventListener(`load`, () => {
-      if (xhr.status === StatusCode.OK) {
-        onUploadSucces(data);
-      } else {
-        onUploadError(xhr.status);
-      }
-    });
-
-    xhr.addEventListener(`error`, () => {
-      onUploadError(`Произошла ошибка соединения`);
-    });
-
-    xhr.addEventListener(`timeout`, () => {
-      onUploadError(`Запрос не успел выполниться за ${xhr.timeout} мс`);
-    });
-
-    xhr.timeout = TIMEOUT;
-
-    xhr.open(`POST`, URL.upload);
-    xhr.send(formData);
+  const upload = (data, onSuccess, onError) => {
+    checkRequest(`POST`, URL.upload, onSuccess, onError, data);
   };
 
   window.backend = {
