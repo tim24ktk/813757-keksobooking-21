@@ -111,7 +111,7 @@
     main.appendChild(clonedErrorMessage);
 
     const errorButton = clonedErrorMessage.querySelector(`.error__button`);
-    errorButton.addEventListener(`click`, removeMessage);
+    errorButton.addEventListener(`click`, onErrorButtonClick);
   };
 
   const removeMessage = () => {
@@ -119,6 +119,10 @@
     const error = document.querySelector(`.error`);
     removeEvent();
     return success ? success.remove() : error.remove();
+  };
+
+  const onErrorButtonClick = () => {
+    removeMessage();
   };
 
   const addEvent = () => {
