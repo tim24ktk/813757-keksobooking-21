@@ -13,6 +13,7 @@
   const capacity = window.main.adForm.querySelector(`#capacity`);
   const adTitleInput = window.main.adForm.querySelector(`#title`);
   const type = document.querySelector(`#type`);
+  const submitButton = window.main.adForm.querySelector(`.ad-form__submit`);
 
   // адрес активированного пина
   const renderAddress = (x, y) => {
@@ -99,7 +100,7 @@
   const successMessage = document.querySelector(`#success`).content.querySelector(`.success`);
   const main = document.querySelector(`main`);
 
-  const succesMessage = () => {
+  const showSuccessMessage = () => {
     const clonedSuccessMessage = successMessage.cloneNode(true);
     main.appendChild(clonedSuccessMessage);
   };
@@ -115,10 +116,11 @@
   };
 
   const removeMessage = () => {
-    const success = document.querySelector(`.success`);
-    const error = document.querySelector(`.error`);
-    removeEvent();
-    return success ? success.remove() : error.remove();
+    const message = document.querySelector(`.success, .error`);
+    if (message !== null) {
+      message.remove();
+      removeEvents();
+    }
   };
 
   const onErrorButtonClick = () => {
@@ -130,7 +132,7 @@
     document.addEventListener(`click`, onDocumentClick);
   };
 
-  const removeEvent = () => {
+  const removeEvents = () => {
     document.removeEventListener(`keydown`, onDocumentKeyDown);
     document.removeEventListener(`click`, onDocumentClick);
   };
@@ -151,14 +153,16 @@
     window.main.blockFilters();
     window.main.blockFilling();
     window.map.removePins();
+    window.map.removeCard();
     window.main.mapPin.style.left = `${LEFT}px`;
     window.main.mapPin.style.top = `${TOP}px`;
     window.main.addEvent();
+    submitButton.style.pointerEvents = `none`;
   };
 
-  const onUploadSucces = () => {
+  const onUploadSuccess = () => {
     deactivatePage();
-    succesMessage();
+    showSuccessMessage();
     addEvent();
   };
 
@@ -179,10 +183,11 @@
 
   window.main.adForm.addEventListener(`submit`, (evt) => {
     evt.preventDefault();
-    window.backend.upload(new FormData(window.main.adForm), onUploadSucces, onUploadError);
+    window.upload(new FormData(window.main.adForm), onUploadSuccess, onUploadError);
   });
 
   window.form = {
-    renderAddress: renderAddress
+    renderAddress: renderAddress,
+    submitButton: submitButton
   };
 })();

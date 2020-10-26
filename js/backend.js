@@ -1,10 +1,6 @@
 'use strict';
 
 (() => {
-  const URL = {
-    download: `https://21.javascript.pages.academy/keksobooking/data`,
-    upload: `https://21.javascript.pages.academy/keksobooking`
-  };
 
   const TIMEOUT = 10000;
   const StatusCode = {
@@ -15,7 +11,7 @@
     SERVICE_UNAVAILABLE: 503
   };
 
-  const checkRequest = (method, url, onSuccess, onError, data) => {
+  const handleRequest = (method, url, onSuccess, onError, data) => {
     const xhr = new XMLHttpRequest();
 
     xhr.responseType = `json`;
@@ -61,16 +57,7 @@
     return method === `GET` ? xhr.send() : xhr.send(data);
   };
 
-  const download = (onSuccess, onError) => {
-    checkRequest(`GET`, URL.download, onSuccess, onError);
-  };
-
-  const upload = (data, onSuccess, onError) => {
-    checkRequest(`POST`, URL.upload, onSuccess, onError, data);
-  };
-
   window.backend = {
-    download: download,
-    upload: upload
+    handleRequest: handleRequest
   };
 })();

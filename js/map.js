@@ -41,10 +41,10 @@
 
       if (checkFilters(advert)) {
         filteredAdverts.push(advert);
-      }
 
-      if (filteredAdverts.length === MAX_ADVERT) {
-        break;
+        if (filteredAdverts.length === MAX_ADVERT) {
+          break;
+        }
       }
     }
     window.pins.createElements(filteredAdverts);
@@ -65,30 +65,12 @@
   };
 
   const onLoadError = (error) => {
-    const errorMessage = document.createElement(`div`);
-    errorMessage.textContent = error;
-    errorMessage.style.width = `400px`;
-    errorMessage.style.height = `60px`;
-    errorMessage.style.borderWidth = `5px`;
-    errorMessage.style.borderStyle = `solid`;
-    errorMessage.style.borderRadius = `20px`;
-    errorMessage.style.font = `25px`;
-    errorMessage.style.color = `red`;
-    errorMessage.style.backgroundColor = `white`;
-    errorMessage.style.position = `fixed`;
-    errorMessage.style.zIndex = `1000`;
-    errorMessage.style.display = `flex`;
-    errorMessage.style.justifyContent = `space-around`;
-    errorMessage.style.alignItems = `center`;
-    errorMessage.style.top = `50%`;
-    errorMessage.style.left = `50%`;
-    errorMessage.style.transform = `translateX(-200px)`;
-    document.body.appendChild(errorMessage);
-    window.main.blockElements();
+    window.message.showError(error);
+    window.main.blockFilters();
   };
 
   const createMapPins = () => {
-    window.backend.download(onLoadSuccess, onLoadError);
+    window.download(onLoadSuccess, onLoadError);
   };
 
   window.map = {
@@ -96,6 +78,5 @@
     removeCard: removeCard,
     removePins: removePins,
     updatePins: updatePins,
-    onLoadSuccess: onLoadSuccess
   };
 })();

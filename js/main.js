@@ -38,6 +38,7 @@
       adFormChild.disabled = false;
     }
     window.form.renderAddress(mainPinAddress.x, mainPinAddress.y);
+    window.form.submitButton.style.pointerEvents = `auto`;
     mapPinMain.removeEventListener(`mousedown`, onMapPinMainMouseDown);
     mapPinMain.removeEventListener(`keydown`, onMapPinMainEnterKeyDown);
   };
