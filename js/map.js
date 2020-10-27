@@ -4,6 +4,13 @@
 (() => {
   const MAX_ADVERT = 5;
   const TYPE_ANY = `any`;
+  const TYPE_MIDDLE = `middle`;
+  const TYPE_LOW = `low`;
+  const TYPE_HIGH = `high`;
+  const MIN_PRICE = 0;
+  const LOW_PRICE = 10000;
+  const HIGH_PRICE = 50000;
+
 
   const housingType = window.main.mapFilters.querySelector(`#housing-type`);
   const housingPrice = window.main.mapFilters.querySelector(`#housing-price`);
@@ -35,13 +42,13 @@
   const checkHousingPrice = (advert) => {
     switch (housingPrice.value) {
       case TYPE_ANY:
-        return advert.offer.price >= 0;
-      case `middle`:
-        return advert.offer.price >= 10000 && advert.offer.price <= 50000;
-      case `low`:
-        return advert.offer.price <= 10000;
-      case `high`:
-        return advert.offer.price >= 50000;
+        return advert.offer.price >= MIN_PRICE;
+      case TYPE_MIDDLE:
+        return advert.offer.price >= LOW_PRICE && advert.offer.price <= HIGH_PRICE;
+      case TYPE_LOW:
+        return advert.offer.price <= LOW_PRICE;
+      case TYPE_HIGH:
+        return advert.offer.price >= HIGH_PRICE;
     }
     return advert.offer.price;
   };
