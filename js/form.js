@@ -1,9 +1,10 @@
 'use strict';
 
 (() => {
-  // ф-ия синхронного переключения времени въезда / выезда
   const MIN_TITLE_LENGTH = 30;
   const MAX_TITLE_LENGTH = 100;
+  const LEFT = 570;
+  const TOP = 375;
   const adFormTime = window.main.adForm.querySelector(`.ad-form__element--time`);
   const price = window.main.adForm.querySelector(`#price`);
   const timeIn = adFormTime.querySelector(`#timein`);
@@ -12,12 +13,14 @@
   const capacity = window.main.adForm.querySelector(`#capacity`);
   const adTitleInput = window.main.adForm.querySelector(`#title`);
   const type = document.querySelector(`#type`);
+  const submitButton = window.main.adForm.querySelector(`.ad-form__submit`);
 
   // адрес активированного пина
   const renderAddress = (x, y) => {
     window.main.address.value = `${x}, ${y}`;
   };
 
+  // ф-ия синхронного переключения времени въезда / выезда
   const onAdFormTimeChange = (evt) => {
     timeIn.value = evt.target.value;
     timeOut.value = evt.target.value;
@@ -26,7 +29,7 @@
 
   // ф-я изменения placeholder и проверки мин цены в зависимости от типа жилья
   const onTypeChange = (evt) => {
-    if (evt.target.value === `bungalo`) {
+    if (evt.target.value === `bungalow`) {
       price.placeholder = `0`;
       price.min = `0`;
     } else if (evt.target.value === `flat`) {
@@ -94,7 +97,97 @@
     capacity.style.borderColor = className;
   };
 
+  const successMessage = document.querySelector(`#success`).content.querySelector(`.success`);
+  const main = document.querySelector(`main`);
+
+  const showSuccessMessage = () => {
+    const clonedSuccessMessage = successMessage.cloneNode(true);
+    main.appendChild(clonedSuccessMessage);
+  };
+
+  const errorMessage = document.querySelector(`#error`).content.querySelector(`.error`);
+
+  const showErrorMessage = () => {
+    const clonedErrorMessage = errorMessage.cloneNode(true);
+    main.appendChild(clonedErrorMessage);
+
+    const errorButton = clonedErrorMessage.querySelector(`.error__button`);
+    errorButton.addEventListener(`click`, onErrorButtonClick);
+  };
+
+  const removeMessage = () => {
+    const message = document.querySelector(`.success, .error`);
+    if (message !== null) {
+      message.remove();
+      removeEvents();
+    }
+  };
+
+  const onErrorButtonClick = () => {
+    removeMessage();
+  };
+
+  const addEvent = () => {
+    document.addEventListener(`keydown`, onDocumentKeyDown);
+    document.addEventListener(`click`, onDocumentClick);
+  };
+
+  const removeEvents = () => {
+    document.removeEventListener(`keydown`, onDocumentKeyDown);
+    document.removeEventListener(`click`, onDocumentClick);
+  };
+
+  const onDocumentKeyDown = (evt) => {
+    window.main.checkEscape(evt, removeMessage);
+  };
+
+  const onDocumentClick = (evt) => {
+    window.main.checkMouseDown(evt, removeMessage);
+  };
+
+  const deactivatePage = () => {
+    window.main.adForm.reset();
+    window.main.mapFilters.reset();
+    window.main.map.classList.add(`map--faded`);
+    window.main.adForm.classList.add(`ad-form--disabled`);
+    window.main.blockFilters();
+    window.main.blockFilling();
+    window.map.removePins();
+    window.map.removeCard();
+    window.main.mapPin.style.left = `${LEFT}px`;
+    window.main.mapPin.style.top = `${TOP}px`;
+    window.main.addEvent();
+    submitButton.style.pointerEvents = `none`;
+  };
+
+  const onUploadSuccess = () => {
+    deactivatePage();
+    showSuccessMessage();
+    addEvent();
+  };
+
+  const onUploadError = () => {
+    showErrorMessage();
+    addEvent();
+  };
+
+  const formReset = document.querySelector(`.ad-form__reset`);
+
+  const onFormResetClick = (evt) => {
+    evt.preventDefault();
+
+    deactivatePage();
+  };
+
+  formReset.addEventListener(`click`, onFormResetClick);
+
+  window.main.adForm.addEventListener(`submit`, (evt) => {
+    evt.preventDefault();
+    window.upload(new FormData(window.main.adForm), onUploadSuccess, onUploadError);
+  });
+
   window.form = {
     renderAddress: renderAddress,
+    submitButton: submitButton
   };
 })();

@@ -16,7 +16,6 @@
   const mainPinPositionX = mapPinMain.offsetLeft;
   const mainPinPositionY = mapPinMain.offsetTop;
 
-
   const mainPinCenter = {
     x: Math.round(mainPinPositionX + MAIN_PIN_WIDTH / 2),
     y: Math.round(mainPinPositionY + MAIN_PIN_WIDTH / 2)
@@ -39,6 +38,7 @@
       adFormChild.disabled = false;
     }
     window.form.renderAddress(mainPinAddress.x, mainPinAddress.y);
+    window.form.submitButton.style.pointerEvents = `auto`;
     mapPinMain.removeEventListener(`mousedown`, onMapPinMainMouseDown);
     mapPinMain.removeEventListener(`keydown`, onMapPinMainEnterKeyDown);
   };
@@ -47,14 +47,18 @@
   const onMapPinMainEnterKeyDown = (evt) => {
     checkEnter(evt, activatePage);
   };
-  mapPinMain.addEventListener(`keydown`, onMapPinMainEnterKeyDown);
 
   // активация страницы с помощью мыши
   const onMapPinMainMouseDown = (evt) => {
     checkMouseDown(evt, activatePage);
   };
 
-  mapPinMain.addEventListener(`mousedown`, onMapPinMainMouseDown);
+  const addEvent = () => {
+    mapPinMain.addEventListener(`keydown`, onMapPinMainEnterKeyDown);
+    mapPinMain.addEventListener(`mousedown`, onMapPinMainMouseDown);
+  };
+
+  addEvent();
 
   // ф-я блокировки формы с фильтрами
   const blockFilters = () => {
@@ -97,13 +101,17 @@
   window.main = {
     map: map,
     adForm: adForm,
-    blockElements: blockFilters,
     mapFilters: mapFilters,
     checkEscape: checkEscape,
     checkMouseDown: checkMouseDown,
     mapPin: mapPinMain,
     address: address,
     pinWidth: MAIN_PIN_WIDTH,
-    pinHeightActive: MAIN_PIN_HEIGHT_ACTIVE
+    pinHeightActive: MAIN_PIN_HEIGHT_ACTIVE,
+    blockFilters: blockFilters,
+    blockFilling: blockFilling,
+    addEvent: addEvent,
+    pinAddressX: mainPinAddress.x,
+    pinAddressY: mainPinAddress.y,
   };
 })();
