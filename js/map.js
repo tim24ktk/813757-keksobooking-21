@@ -6,6 +6,9 @@
   const TYPE_ANY = `any`;
 
   const housingType = window.main.mapFilters.querySelector(`#housing-type`);
+  const housingPrice = window.main.mapFilters.querySelector(`#housing-price`);
+  const housingRooms = window.main.mapFilters.querySelector(`#housing-rooms`);
+  const housingGuests = window.main.mapFilters.querySelector(`#housing-guests`);
 
   let adverts = [];
 
@@ -29,8 +32,48 @@
     return housingType.value === TYPE_ANY || housingType.value === advert.offer.type;
   };
 
+  const checkHousingPrice = (advert) => {
+    switch (housingPrice.value) {
+      case TYPE_ANY:
+        return advert.offer.price >= 0;
+      case `middle`:
+        return advert.offer.price >= 10000 && advert.offer.price <= 50000;
+      case `low`:
+        return advert.offer.price <= 10000;
+      case `high`:
+        return advert.offer.price >= 50000;
+    }
+    return advert.offer.price;
+  };
+
+  const checkHousingRooms = (advert) => {
+    return housingRooms.value === TYPE_ANY || +housingRooms.value === advert.offer.rooms;
+  };
+
+  const checkHousingGuests = (advert) => {
+    return housingGuests.value === TYPE_ANY || +housingGuests.value === advert.offer.guests;
+  };
+
+  const checkHousingFeatures = (advert) => {
+    const features = [];
+
+    const housingFeatures = window.main.mapFilters.querySelectorAll(`input:checked`);
+
+    for (let i = 0; i < housingFeatures.length; i++) {
+      features.push(housingFeatures[i].value);
+    }
+
+    return features.every((value) => {
+      return advert.offer.features.includes(value);
+    });
+  };
+
   const checkFilters = (advert) => {
-    return checkHousingType(advert);
+    return checkHousingType(advert)
+      && checkHousingPrice(advert)
+      && checkHousingRooms(advert)
+      && checkHousingGuests(advert)
+      && checkHousingFeatures(advert);
   };
 
   const updatePins = () => {
@@ -50,7 +93,7 @@
     window.pins.createElements(filteredAdverts);
   };
 
-  housingType.addEventListener(`change`, (evt) => {
+  window.main.mapFilters.addEventListener(`change`, (evt) => {
     evt.preventDefault();
     window.debounce(() => {
       removePins();
