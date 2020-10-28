@@ -58,8 +58,8 @@
     return housingGuests.value === TYPE_ANY || +housingGuests.value === advert.offer.guests;
   };
 
-  const checkHousingFeatures = (advert, newFeatures) => {
-    return newFeatures.every((value) => {
+  const checkHousingFeatures = (advert, features) => {
+    return features.every((value) => {
       return advert.offer.features.includes(value);
     });
   };
@@ -79,15 +79,12 @@
 
     housingFeatures.forEach((feature) => {
       features.push(feature.value);
-      return features;
     });
-
-    const newFeatures = features;
 
     for (let i = 0; i < adverts.length; i++) {
       const advert = adverts[i];
 
-      if (checkFilters(advert) && checkHousingFeatures(advert, newFeatures)) {
+      if (checkFilters(advert) && checkHousingFeatures(advert, features)) {
         filteredAdverts.push(advert);
 
         if (filteredAdverts.length === MAX_ADVERT) {
