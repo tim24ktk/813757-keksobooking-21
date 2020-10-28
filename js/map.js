@@ -4,8 +4,17 @@
 (() => {
   const MAX_ADVERT = 5;
   const TYPE_ANY = `any`;
+  const TYPE_MIDDLE = `middle`;
+  const TYPE_LOW = `low`;
+  const TYPE_HIGH = `high`;
+  const LOW_PRICE = 10000;
+  const HIGH_PRICE = 50000;
+
 
   const housingType = window.main.mapFilters.querySelector(`#housing-type`);
+  const housingPrice = window.main.mapFilters.querySelector(`#housing-price`);
+  const housingRooms = window.main.mapFilters.querySelector(`#housing-rooms`);
+  const housingGuests = window.main.mapFilters.querySelector(`#housing-guests`);
 
   let adverts = [];
 
@@ -29,17 +38,56 @@
     return housingType.value === TYPE_ANY || housingType.value === advert.offer.type;
   };
 
+  const checkHousingPrice = (advert) => {
+    switch (housingPrice.value) {
+      case TYPE_MIDDLE:
+        return advert.offer.price >= LOW_PRICE && advert.offer.price <= HIGH_PRICE;
+      case TYPE_LOW:
+        return advert.offer.price < LOW_PRICE;
+      case TYPE_HIGH:
+        return advert.offer.price >= HIGH_PRICE;
+    }
+    return true;
+  };
+
+  const checkHousingRooms = (advert) => {
+    return housingRooms.value === TYPE_ANY || +housingRooms.value === advert.offer.rooms;
+  };
+
+  const checkHousingGuests = (advert) => {
+    return housingGuests.value === TYPE_ANY || +housingGuests.value === advert.offer.guests;
+  };
+
+  const checkHousingFeatures = (advert, newFeatures) => {
+    return newFeatures.every((value) => {
+      return advert.offer.features.includes(value);
+    });
+  };
+
   const checkFilters = (advert) => {
-    return checkHousingType(advert);
+    return checkHousingType(advert)
+      && checkHousingPrice(advert)
+      && checkHousingRooms(advert)
+      && checkHousingGuests(advert);
   };
 
   const updatePins = () => {
     const filteredAdverts = [];
 
+    const housingFeatures = window.main.mapFilters.querySelectorAll(`input:checked`);
+    const features = [];
+
+    housingFeatures.forEach((feature) => {
+      features.push(feature.value);
+      return features;
+    });
+
+    const newFeatures = features;
+
     for (let i = 0; i < adverts.length; i++) {
       const advert = adverts[i];
 
-      if (checkFilters(advert)) {
+      if (checkFilters(advert) && checkHousingFeatures(advert, newFeatures)) {
         filteredAdverts.push(advert);
 
         if (filteredAdverts.length === MAX_ADVERT) {
@@ -50,7 +98,7 @@
     window.pins.createElements(filteredAdverts);
   };
 
-  housingType.addEventListener(`change`, (evt) => {
+  window.main.mapFilters.addEventListener(`change`, (evt) => {
     evt.preventDefault();
     window.debounce(() => {
       removePins();
