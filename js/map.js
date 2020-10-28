@@ -7,7 +7,6 @@
   const TYPE_MIDDLE = `middle`;
   const TYPE_LOW = `low`;
   const TYPE_HIGH = `high`;
-  const MIN_PRICE = 0;
   const LOW_PRICE = 10000;
   const HIGH_PRICE = 50000;
 
@@ -41,16 +40,14 @@
 
   const checkHousingPrice = (advert) => {
     switch (housingPrice.value) {
-      case TYPE_ANY:
-        return advert.offer.price >= MIN_PRICE;
       case TYPE_MIDDLE:
         return advert.offer.price >= LOW_PRICE && advert.offer.price <= HIGH_PRICE;
       case TYPE_LOW:
-        return advert.offer.price <= LOW_PRICE;
+        return advert.offer.price < LOW_PRICE;
       case TYPE_HIGH:
         return advert.offer.price >= HIGH_PRICE;
     }
-    return advert.offer.price;
+    return true;
   };
 
   const checkHousingRooms = (advert) => {
@@ -61,16 +58,8 @@
     return housingGuests.value === TYPE_ANY || +housingGuests.value === advert.offer.guests;
   };
 
-  const checkHousingFeatures = (advert) => {
-    const features = [];
-
-    const housingFeatures = window.main.mapFilters.querySelectorAll(`input:checked`);
-
-    for (let i = 0; i < housingFeatures.length; i++) {
-      features.push(housingFeatures[i].value);
-    }
-
-    return features.every((value) => {
+  const checkHousingFeatures = (advert, newFeatures) => {
+    return newFeatures.every((value) => {
       return advert.offer.features.includes(value);
     });
   };
@@ -79,17 +68,26 @@
     return checkHousingType(advert)
       && checkHousingPrice(advert)
       && checkHousingRooms(advert)
-      && checkHousingGuests(advert)
-      && checkHousingFeatures(advert);
+      && checkHousingGuests(advert);
   };
 
   const updatePins = () => {
     const filteredAdverts = [];
 
+    const housingFeatures = window.main.mapFilters.querySelectorAll(`input:checked`);
+    const features = [];
+
+    housingFeatures.forEach((feature) => {
+      features.push(feature.value);
+      return features;
+    });
+
+    const newFeatures = features;
+
     for (let i = 0; i < adverts.length; i++) {
       const advert = adverts[i];
 
-      if (checkFilters(advert)) {
+      if (checkFilters(advert) && checkHousingFeatures(advert, newFeatures)) {
         filteredAdverts.push(advert);
 
         if (filteredAdverts.length === MAX_ADVERT) {
