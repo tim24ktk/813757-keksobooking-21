@@ -148,6 +148,8 @@
   const deactivatePage = () => {
     window.main.adForm.reset();
     window.main.mapFilters.reset();
+    window.uploadPhoto.avatar.src = `img/muffin-grey.svg`;
+    window.uploadPhoto.advertImage.innerHTML = ``;
     window.main.map.classList.add(`map--faded`);
     window.main.adForm.classList.add(`ad-form--disabled`);
     window.main.blockFilters();
