@@ -1,30 +1,34 @@
 'use strict';
 
 (() => {
+  const MESSAGE_REMOVE_TIMEOUT = 500;
+
   const createErrorMessage = (error) => {
     const errorMessage = document.createElement(`div`);
+    const style = errorMessage.style;
+
     errorMessage.textContent = error;
-    errorMessage.style.width = `400px`;
-    errorMessage.style.height = `60px`;
-    errorMessage.style.borderWidth = `5px`;
-    errorMessage.style.borderStyle = `solid`;
-    errorMessage.style.borderRadius = `20px`;
-    errorMessage.style.font = `25px`;
-    errorMessage.style.color = `red`;
-    errorMessage.style.backgroundColor = `white`;
-    errorMessage.style.position = `fixed`;
-    errorMessage.style.zIndex = `1000`;
-    errorMessage.style.display = `flex`;
-    errorMessage.style.justifyContent = `space-around`;
-    errorMessage.style.alignItems = `center`;
-    errorMessage.style.top = `50%`;
-    errorMessage.style.left = `50%`;
-    errorMessage.style.transform = `translateX(-200px)`;
+    style.width = `400px`;
+    style.height = `60px`;
+    style.borderWidth = `5px`;
+    style.borderStyle = `solid`;
+    style.borderRadius = `20px`;
+    style.font = `25px`;
+    style.color = `red`;
+    style.backgroundColor = `white`;
+    style.position = `fixed`;
+    style.zIndex = `1000`;
+    style.display = `flex`;
+    style.justifyContent = `space-around`;
+    style.alignItems = `center`;
+    style.top = `50%`;
+    style.left = `50%`;
+    style.transform = `translateX(-200px)`;
     document.body.appendChild(errorMessage);
 
     const onSetTimeout = () => errorMessage.remove();
 
-    window.setTimeout(onSetTimeout, 500);
+    window.setTimeout(onSetTimeout, MESSAGE_REMOVE_TIMEOUT);
   };
 
   window.message = {
