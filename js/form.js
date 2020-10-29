@@ -150,6 +150,7 @@
     window.main.mapFilters.reset();
     window.main.map.classList.add(`map--faded`);
     window.main.adForm.classList.add(`ad-form--disabled`);
+    window.uploadPhoto.reset();
     window.main.blockFilters();
     window.main.blockFilling();
     window.map.removePins();
