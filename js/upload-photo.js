@@ -3,11 +3,17 @@
 (() => {
 
   const FILE_TYPES = [`gif`, `jpg`, `jpeg`, `png`];
+  const SIZE = `70`;
 
   const avatarChooser = window.main.adForm.querySelector(`.ad-form-header__input`);
   const avatarPreview = window.main.adForm.querySelector(`.ad-form-header__preview img`);
   const photoChooser = window.main.adForm.querySelector(`.ad-form__input`);
   const advertPhoto = window.main.adForm.querySelector(`.ad-form__photo`);
+
+  const reset = () => {
+    avatarPreview.src = `img/muffin-grey.svg`;
+    advertPhoto.innerHTML = ``;
+  };
 
   const onInputChange = (evt) => {
     const fileChooser = evt.target;
@@ -21,7 +27,7 @@
     if (matches) {
       const reader = new FileReader();
 
-      reader.addEventListener(`load`, function () {
+      reader.addEventListener(`load`, () => {
         switch (fileChooser) {
           case avatarChooser:
             avatarPreview.src = reader.result;
@@ -29,8 +35,8 @@
           case photoChooser:
             const advertPreview = document.createElement(`img`);
             advertPreview.src = reader.result;
-            advertPreview.style.maxWidth = `70px`;
-            advertPreview.style.maxHeight = `70px`;
+            advertPreview.style.maxWidth = `${SIZE}px`;
+            advertPreview.style.maxHeight = `${SIZE}px`;
             advertPhoto.appendChild(advertPreview);
             break;
         }
@@ -39,11 +45,19 @@
     }
   };
 
-  avatarChooser.addEventListener(`change`, onInputChange);
-  photoChooser.addEventListener(`change`, onInputChange);
+  const onAvatarChooserChange = (evt) => {
+    onInputChange(evt);
+  };
+
+  const onPhotoChooserChange = (evt) => {
+    onInputChange(evt);
+  };
+
+
+  avatarChooser.addEventListener(`change`, onAvatarChooserChange);
+  photoChooser.addEventListener(`change`, onPhotoChooserChange);
 
   window.uploadPhoto = {
-    avatar: avatarPreview,
-    advertImage: advertPhoto
+    reset: reset
   };
 })();
