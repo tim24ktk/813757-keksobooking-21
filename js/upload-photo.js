@@ -13,7 +13,7 @@ const reset = () => {
   advertPhoto.innerHTML = ``;
 };
 
-const onInputChange = (evt) => {
+const changeFile = (evt) => {
   const fileChooser = evt.target;
   const file = fileChooser.files[0];
   const fileName = file.name.toLowerCase();
@@ -44,11 +44,11 @@ const onInputChange = (evt) => {
 };
 
 const onAvatarChooserChange = (evt) => {
-  onInputChange(evt);
+  changeFile(evt);
 };
 
 const onPhotoChooserChange = (evt) => {
-  onInputChange(evt);
+  changeFile(evt);
 };
 
 
