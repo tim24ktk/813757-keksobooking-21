@@ -16,18 +16,18 @@ const getWordValue = (type) => {
 };
 
 // ф-я отрисовки модального окна с информацией об объявлении
-const announcementСard = document.querySelector(`#card`).content.querySelector(`.popup`);
+const announcementCard = document.querySelector(`#card`).content.querySelector(`.popup`);
 
 const createCardOne = (advert) => {
-  const announcementСardClone = announcementСard.cloneNode(true);
-  const popupTextPrice = announcementСardClone.querySelector(`.popup__text--price`);
-  const popupAvatar = announcementСardClone.querySelector(`.popup__avatar`);
-  const popupTitle = announcementСardClone.querySelector(`.popup__title`);
-  const popupTextAddress = announcementСardClone.querySelector(`.popup__text--address`);
-  const popupType = announcementСardClone.querySelector(`.popup__type`);
-  const popupTextCapacity = announcementСardClone.querySelector(`.popup__text--capacity`);
-  const popupTextTime = announcementСardClone.querySelector(`.popup__text--time`);
-  const popupDescription = announcementСardClone.querySelector(`.popup__description`);
+  const announcementCardClone = announcementCard.cloneNode(true);
+  const popupTextPrice = announcementCardClone.querySelector(`.popup__text--price`);
+  const popupAvatar = announcementCardClone.querySelector(`.popup__avatar`);
+  const popupTitle = announcementCardClone.querySelector(`.popup__title`);
+  const popupTextAddress = announcementCardClone.querySelector(`.popup__text--address`);
+  const popupType = announcementCardClone.querySelector(`.popup__type`);
+  const popupTextCapacity = announcementCardClone.querySelector(`.popup__text--capacity`);
+  const popupTextTime = announcementCardClone.querySelector(`.popup__text--time`);
+  const popupDescription = announcementCardClone.querySelector(`.popup__description`);
 
   if (advert.offer.price !== undefined) {
     popupTextPrice.textContent = `${advert.offer.price}₽/ночь`;
@@ -77,7 +77,7 @@ const createCardOne = (advert) => {
     popupDescription.remove();
   }
 
-  const features = announcementСardClone.querySelector(`.popup__features`);
+  const features = announcementCardClone.querySelector(`.popup__features`);
 
   features.innerHTML = ``;
   // создание списка features
@@ -92,8 +92,8 @@ const createCardOne = (advert) => {
   }
 
   // вставить фото в каждый отдельный img
-  const popupPhotos = announcementСardClone.querySelector(`.popup__photos`);
-  const popupPhoto = announcementСardClone.querySelector(`.popup__photo`);
+  const popupPhotos = announcementCardClone.querySelector(`.popup__photos`);
+  const popupPhoto = announcementCardClone.querySelector(`.popup__photo`);
 
   if (advert.offer.photos !== undefined) {
     advert.offer.photos.forEach((photo) => {
@@ -105,12 +105,12 @@ const createCardOne = (advert) => {
 
   popupPhotos.removeChild(popupPhoto);
 
-  const popupClose = announcementСardClone.querySelector(`.popup__close`);
+  const popupClose = announcementCardClone.querySelector(`.popup__close`);
 
   document.addEventListener(`keydown`, onEscapeKeydown);
   popupClose.addEventListener(`click`, onPopupCloseClick);
 
-  return announcementСardClone;
+  return announcementCardClone;
 };
 
 const mapFiltersContainer = document.querySelector(`.map__filters-container`);
