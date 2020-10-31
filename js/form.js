@@ -31,15 +31,20 @@ const houseTypeToPrice = {
 };
 
 // ф-я изменения placeholder и проверки мин цены в зависимости от типа жилья
-const onTypeChange = (evt) => {
-  const value = houseTypeToPrice[evt.target.value];
+const setHouseTypeMinPrice = () => {
+  const value = houseTypeToPrice[type.value];
   price.placeholder = value;
   price.min = value;
+};
+
+const onTypeChange = () => {
+  setHouseTypeMinPrice();
 };
 
 type.addEventListener(`change`, onTypeChange);
 
 // ф-я проверки количества соответствия количества гостей и комнат
+
 const onCapacityChange = () => {
   validateRoomCapacity();
 };
@@ -116,6 +121,8 @@ const onDocumentClick = (evt) => {
 
 const deactivatePage = () => {
   window.main.adForm.reset();
+  setHouseTypeMinPrice();
+  validateRoomCapacity();
   window.main.mapFilters.reset();
   window.main.map.classList.add(`map--faded`);
   window.main.adForm.classList.add(`ad-form--disabled`);
